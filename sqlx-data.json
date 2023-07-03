@@ -1,6 +1,19 @@
 {
   "db": "PostgreSQL",
-  "afc4dc4bafe6138b5ce7fd7912253055ef2a6725804960b43c4dae59ee4b6d22": {
+  "243b432fad966348d2e7608763f8d5992317e28bbe8fc5573bae713cd62916bd": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Bpchar",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\nINSERT INTO user_tokens (token, user_id)\nVALUES ($1, $2)\n"
+  },
+  "b0b7aafd5af38f09af94f75193f9862be2a0f9511f4c83e2ed0371a491e003dd": {
     "describe": {
       "columns": [
         {
@@ -42,7 +55,7 @@
         ]
       }
     },
-    "query": "\nSELECT id, username, email, password, is_admin\nFROM users\nWHERE username = $1\n"
+    "query": "\nSELECT id, username, email, password, is_admin\nFROM users\nWHERE email = $1\n"
   },
   "ede316bd4569fe537edcd566b870fd6b53f16fae65ef2d49eb3e50332d62539e": {
     "describe": {

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = "0.6.18"
+base64 = "0.21.2"
 rand = "0.8.5"
 rust-argon2 = "1.0.0"
 serde = "1.0.164"

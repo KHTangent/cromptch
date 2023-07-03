@@ -1,6 +1,8 @@
 use argon2::{hash_encoded, verify_encoded};
+use rand::RngCore;
 use sqlx::PgPool;
 use uuid::Uuid;
+use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 
 use crate::error::{AppError, AppResult};
 
@@ -65,7 +67,7 @@ WHERE id = $1
 
 	pub async fn from_login(
 		pool: &PgPool,
-		username: &String,
+		email: &String,
 		password: &String,
 	) -> AppResult<Self> {
 		let user = sqlx::query_as!(
@@ -73,9 +75,9 @@ WHERE id = $1
 			r#"
 SELECT id, username, email, password, is_admin
 FROM users
-WHERE username = $1
+WHERE email = $1
 "#,
-			username
+			email
 		)
 		.fetch_one(pool)
 		.await
@@ -86,5 +88,24 @@ WHERE username = $1
 			true => Ok(user),
 			false => Err(AppError::not_found("User not found")),
 		}
+	}
+
+	pub async fn create_token(&self, pool: &PgPool) -> AppResult<String> {
+		// 48 bytes = 64 characters in base64
+		let mut random_bytes: [u8; 48] = [0; 48];
+		rand::thread_rng().fill_bytes(&mut random_bytes);
+		let token = URL_SAFE_NO_PAD.encode(&random_bytes);
+		sqlx::query!(
+			r#"
+INSERT INTO user_tokens (token, user_id)
+VALUES ($1, $2)
+"#,
+			&token,
+			self.id
+		)
+		.execute(pool)
+		.await
+		.map_err(|_| AppError::internal("Failed to issue token"))?;
+		Ok(token)
 	}
 }

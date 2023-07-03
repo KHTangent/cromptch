@@ -334,6 +334,7 @@ name = "cromptch"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "base64 0.21.2",
  "rand",
  "rust-argon2",
  "serde",
