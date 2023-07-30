@@ -80,6 +80,7 @@ async fn create_recipe(
 		&steps,
 	)
 	.await?;
+	info!("User {} created recipe {}", user.id, recipe.id);
 	Ok(Json(CreateRecipeResponse { id: recipe.id }))
 }
 
