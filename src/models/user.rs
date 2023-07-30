@@ -44,10 +44,10 @@ impl User {
 		let user = sqlx::query_as!(
 			User,
 			r#"
-INSERT INTO users (username, email, password, is_admin)
-VALUES ($1, $2, $3, $4)
-RETURNING id, username, email, password, is_admin
-"#,
+			INSERT INTO users (username, email, password, is_admin)
+			VALUES ($1, $2, $3, $4)
+			RETURNING id, username, email, password, is_admin
+			"#,
 			username,
 			email,
 			hash,
@@ -63,10 +63,10 @@ RETURNING id, username, email, password, is_admin
 		let user = sqlx::query_as!(
 			User,
 			r#"
-SELECT id, username, email, password, is_admin
-FROM users
-WHERE id = $1
-"#,
+			SELECT id, username, email, password, is_admin
+			FROM users
+			WHERE id = $1
+			"#,
 			id
 		)
 		.fetch_one(pool)
@@ -79,10 +79,10 @@ WHERE id = $1
 		let user = sqlx::query_as!(
 			User,
 			r#"
-SELECT u.id, u.username, u.email, u.password, u.is_admin
-FROM users u INNER JOIN user_tokens t ON u.id = t.user_id
-WHERE t.token = $1
-"#,
+			SELECT u.id, u.username, u.email, u.password, u.is_admin
+			FROM users u INNER JOIN user_tokens t ON u.id = t.user_id
+			WHERE t.token = $1
+			"#,
 			token
 		)
 		.fetch_one(pool)
@@ -90,10 +90,10 @@ WHERE t.token = $1
 		.map_err(|_| AppError::unauthorized("Invalid user token"))?;
 		sqlx::query!(
 			r#"
-UPDATE user_tokens
-SET last_used = NOW()
-WHERE token = $1
-"#,
+			UPDATE user_tokens
+			SET last_used = NOW()
+			WHERE token = $1
+			"#,
 			token
 		)
 		.execute(pool)
@@ -106,10 +106,10 @@ WHERE token = $1
 		let user = sqlx::query_as!(
 			User,
 			r#"
-SELECT id, username, email, password, is_admin
-FROM users
-WHERE email = $1
-"#,
+			SELECT id, username, email, password, is_admin
+			FROM users
+			WHERE email = $1
+			"#,
 			email
 		)
 		.fetch_one(pool)
@@ -130,9 +130,9 @@ WHERE email = $1
 		let token = URL_SAFE_NO_PAD.encode(&random_bytes);
 		sqlx::query!(
 			r#"
-INSERT INTO user_tokens (token, user_id)
-VALUES ($1, $2)
-"#,
+			INSERT INTO user_tokens (token, user_id)
+			VALUES ($1, $2)
+			"#,
 			&token,
 			self.id
 		)
