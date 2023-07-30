@@ -8,7 +8,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
-use crate::{error::AppResult, models::user::User, AppState};
+use crate::{error::{AppResult, AppError}, models::user::User, AppState};
 
 pub fn user_router(state: Arc<AppState>) -> Router {
 	Router::new()
@@ -34,6 +34,19 @@ async fn create_user(
 	}): Json<CreateUserRequest>,
 ) -> AppResult<&'static str> {
 	info!("Creating user {}...", username);
+	if username.len() < 3 {
+		return Err(AppError::bad_request(
+			"Username must be at least 3 characters",
+		));
+	}
+	if password.len() < 8 {
+		return Err(AppError::bad_request(
+			"Password must be at least 8 characters",
+		));
+	}
+	if !email.contains('@') {
+		return Err(AppError::bad_request("Invalid email address"));
+	}
 	User::create(&state.pool, &username, &email, &password, &false).await?;
 	Ok("User created")
 }

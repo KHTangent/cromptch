@@ -34,11 +34,6 @@ impl User {
 		is_admin: &bool,
 	) -> AppResult<Self> {
 		let salt: [u8; 16] = rand::random();
-		if password.len() < 8 {
-			return Err(AppError::bad_request(
-				"Password must be at least 8 characters",
-			));
-		}
 		let hash = hash_encoded(password.as_bytes(), &salt, &argon2::Config::default())
 			.map_err(|_| AppError::internal("Failed to hash password"))?;
 		let user = sqlx::query_as!(
