@@ -4,8 +4,13 @@ mod models;
 
 use std::sync::Arc;
 
-use axum::{routing::get, Router};
+use axum::{
+	http::{HeaderValue, Method},
+	routing::get,
+	Router,
+};
 use sqlx::PgPool;
+use tower_http::cors::CorsLayer;
 use tracing::info;
 
 pub struct AppState {
@@ -27,7 +32,13 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 
 	info!("Creating routes...");
 	let router = Router::new()
-		.route("/", get(hello_world))
+		.layer(
+			CorsLayer::new()
+				.allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+				.allow_origin("https://cromptch.derg.vip".parse::<HeaderValue>().unwrap())
+				.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE]),
+		)
+		.route("/", get(index))
 		.merge(api::user::user_router(app_state.clone()))
 		.merge(api::recipe::recipe_router(app_state.clone()));
 	info!("Routes created!");
@@ -36,6 +47,6 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 	Ok(router.into())
 }
 
-async fn hello_world() -> &'static str {
-	"Hello, world!"
+async fn index() -> &'static str {
+	"Cromptch API. Please use the frontend instead."
 }
