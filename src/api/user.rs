@@ -8,7 +8,11 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
-use crate::{error::{AppResult, AppError}, models::user::User, AppState};
+use crate::{
+	error::{AppError, AppResult},
+	models::user::User,
+	AppState,
+};
 
 pub fn user_router(state: Arc<AppState>) -> Router {
 	Router::new()
@@ -58,6 +62,7 @@ pub struct LoginUserRequest {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LoginUserResponse {
 	pub id: String,
 	pub username: String,
