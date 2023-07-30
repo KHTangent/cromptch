@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use axum::{extract::State, routing::post, Json, Router};
+use axum::{
+	extract::State,
+	routing::{get, post},
+	Json, Router,
+};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
@@ -10,6 +14,7 @@ pub fn user_router(state: Arc<AppState>) -> Router {
 	Router::new()
 		.route("/user/create", post(create_user))
 		.route("/user/login", post(login_user))
+		.route("/user/self", get(get_self))
 		.with_state(state)
 }
 
@@ -62,5 +67,22 @@ async fn login_user(
 		email: user.email,
 		is_admin: user.is_admin,
 		token,
+	}))
+}
+
+#[derive(Serialize)]
+pub struct UserSelfResponse {
+	pub id: String,
+	pub username: String,
+	pub email: String,
+	pub is_admin: bool,
+}
+
+async fn get_self(user: User) -> AppResult<Json<UserSelfResponse>> {
+	Ok(Json(UserSelfResponse {
+		id: user.id.to_string(),
+		username: user.username,
+		email: user.email,
+		is_admin: user.is_admin,
 	}))
 }

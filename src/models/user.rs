@@ -1,10 +1,20 @@
+use std::sync::Arc;
+
 use argon2::{hash_encoded, verify_encoded};
+use axum::{
+	async_trait,
+	extract::{FromRef, FromRequestParts},
+	http::request::Parts,
+};
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use rand::RngCore;
 use sqlx::PgPool;
 use uuid::Uuid;
-use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 
-use crate::error::{AppError, AppResult};
+use crate::{
+	error::{AppError, AppResult},
+	AppState,
+};
 
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct User {
@@ -65,11 +75,34 @@ WHERE id = $1
 		Ok(user)
 	}
 
-	pub async fn from_login(
-		pool: &PgPool,
-		email: &String,
-		password: &String,
-	) -> AppResult<Self> {
+	pub async fn from_token(pool: &PgPool, token: &String) -> AppResult<Self> {
+		let user = sqlx::query_as!(
+			User,
+			r#"
+SELECT u.id, u.username, u.email, u.password, u.is_admin
+FROM users u INNER JOIN user_tokens t ON u.id = t.user_id
+WHERE t.token = $1
+"#,
+			token
+		)
+		.fetch_one(pool)
+		.await
+		.map_err(|_| AppError::unauthorized("Invalid user token"))?;
+		sqlx::query!(
+			r#"
+UPDATE user_tokens
+SET last_used = NOW()
+WHERE token = $1
+"#,
+			token
+		)
+		.execute(pool)
+		.await
+		.map_err(|_| AppError::internal("Failed to update token"))?;
+		Ok(user)
+	}
+
+	pub async fn from_login(pool: &PgPool, email: &String, password: &String) -> AppResult<Self> {
 		let user = sqlx::query_as!(
 			User,
 			r#"
@@ -107,5 +140,29 @@ VALUES ($1, $2)
 		.await
 		.map_err(|_| AppError::internal("Failed to issue token"))?;
 		Ok(token)
+	}
+}
+
+#[async_trait]
+impl<S> FromRequestParts<S> for User
+where
+	Arc<AppState>: FromRef<S>,
+	S: Send + Sync,
+{
+	type Rejection = AppError;
+
+	async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+		let token = parts
+			.headers
+			.get("Authorization")
+			.ok_or(AppError::unauthorized("Missing authorization header"))?
+			.to_str()
+			.map_err(|_| AppError::unauthorized("Invalid authorization header"))?
+			.trim_start_matches("Bearer ")
+			.to_string();
+		let state = Arc::from_ref(state);
+
+		let user = User::from_token(&state.pool, &token).await?;
+		Ok(user)
 	}
 }
