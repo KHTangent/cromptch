@@ -5,7 +5,7 @@ mod models;
 use std::sync::Arc;
 
 use axum::{
-	http::{HeaderValue, Method},
+	http::{self, HeaderValue, Method},
 	routing::get,
 	Router,
 };
@@ -32,15 +32,18 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 
 	info!("Creating routes...");
 	let router = Router::new()
-		.layer(
-			CorsLayer::new()
-				.allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-				.allow_origin("https://cromptch.derg.vip".parse::<HeaderValue>().unwrap())
-				.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE]),
-		)
 		.route("/", get(index))
 		.merge(api::user::user_router(app_state.clone()))
-		.merge(api::recipe::recipe_router(app_state.clone()));
+		.merge(api::recipe::recipe_router(app_state.clone()))
+		.layer(
+			CorsLayer::new()
+				.allow_origin([
+					"http://localhost:3000".parse::<HeaderValue>().unwrap(),
+					"https://cromptch.derg.vip".parse::<HeaderValue>().unwrap(),
+				])
+				.allow_headers([http::header::AUTHORIZATION, http::header::CONTENT_TYPE])
+				.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE]),
+		);
 	info!("Routes created!");
 
 	info!("Server started!");
