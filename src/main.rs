@@ -28,7 +28,8 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 	info!("Creating routes...");
 	let router = Router::new()
 		.route("/", get(hello_world))
-		.merge(api::user::user_router(app_state.clone()));
+		.merge(api::user::user_router(app_state.clone()))
+		.merge(api::recipe::recipe_router(app_state.clone()));
 	info!("Routes created!");
 
 	info!("Server started!");

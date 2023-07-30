@@ -1,19 +1,112 @@
 {
   "db": "PostgreSQL",
-  "243b432fad966348d2e7608763f8d5992317e28bbe8fc5573bae713cd62916bd": {
+  "07f8ccf7872fc82d82a1e8e02565322f4ed07378e669bab12f6ef7467e83b701": {
+    "describe": {
+      "columns": [
+        {
+          "name": "quantity",
+          "ordinal": 0,
+          "type_info": "Numeric"
+        },
+        {
+          "name": "unit",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\n\t\t\tSELECT quantity, unit, name\n\t\t\tFROM recipe_ingredients\n\t\t\tWHERE recipe_id = $1\n\t\t\tORDER BY num\n\t\t\t"
+  },
+  "134cb8c79a1a1e9256eb2465a98352904f882d859a7e68ca95cc0106180e9936": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "title",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "author",
+          "ordinal": 3,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\n\t\t\tSELECT id, title, description, author\n\t\t\tFROM recipes\n\t\t\tWHERE id = $1\n\t\t\t"
+  },
+  "14de9d9a107f671c02b3364281b428b5c38adc35bfb5f55fd9ff7a7b49ed4c6e": {
     "describe": {
       "columns": [],
       "nullable": [],
       "parameters": {
         "Left": [
-          "Bpchar",
+          "Uuid",
+          "Int4",
+          "Numeric",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n\t\t\t\tINSERT INTO recipe_ingredients (recipe_id, num, quantity, unit, name)\n\t\t\t\tVALUES ($1, $2, $3, $4, $5)\n\t\t\t\t"
+  },
+  "251c7d6440b0e054b9bd451131b75501a9094b03de83ada47448818a635cc05e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "description",
+          "ordinal": 0,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
           "Uuid"
         ]
       }
     },
-    "query": "\nINSERT INTO user_tokens (token, user_id)\nVALUES ($1, $2)\n"
+    "query": "\n\t\t\tSELECT description\n\t\t\tFROM recipe_steps\n\t\t\tWHERE recipe_id = $1\n\t\t\tORDER BY num\n\t\t\t"
   },
-  "b0b7aafd5af38f09af94f75193f9862be2a0f9511f4c83e2ed0371a491e003dd": {
+  "51252593676519cb6a3d8b1ed31903c54dddb23ddd4ddf4a5228f9776211dbdb": {
     "describe": {
       "columns": [
         {
@@ -55,9 +148,81 @@
         ]
       }
     },
-    "query": "\nSELECT id, username, email, password, is_admin\nFROM users\nWHERE email = $1\n"
+    "query": "\n\t\t\tSELECT id, username, email, password, is_admin\n\t\t\tFROM users\n\t\t\tWHERE email = $1\n\t\t\t"
   },
-  "ede316bd4569fe537edcd566b870fd6b53f16fae65ef2d49eb3e50332d62539e": {
+  "572ab95297ce9d878566a24d00c9c92ffec2cb390906a9e8e9a72f597b57b075": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Bpchar",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\n\t\t\tINSERT INTO user_tokens (token, user_id)\n\t\t\tVALUES ($1, $2)\n\t\t\t"
+  },
+  "784c5853ca3eb3211fc6e36b792df9b28f8a9bb3ffe266d440ee08417daad938": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "username",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "email",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "password",
+          "ordinal": 3,
+          "type_info": "Text"
+        },
+        {
+          "name": "is_admin",
+          "ordinal": 4,
+          "type_info": "Bool"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Bpchar"
+        ]
+      }
+    },
+    "query": "\n\t\t\tSELECT u.id, u.username, u.email, u.password, u.is_admin\n\t\t\tFROM users u INNER JOIN user_tokens t ON u.id = t.user_id\n\t\t\tWHERE t.token = $1\n\t\t\t"
+  },
+  "8d5a26cc78d8eceb046cc77c80bf32726a80689ce3ab7f31487b142d476b7a85": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text",
+          "Text",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\n\t\t\tINSERT INTO recipes (id, title, description, author)\n\t\t\tVALUES ($1, $2, $3, $4)\n\t\t\t"
+  },
+  "a372e69795c5ee3dab3948a94bab85f0783011a11064d9578847881f91b7ed82": {
     "describe": {
       "columns": [
         {
@@ -99,9 +264,21 @@
         ]
       }
     },
-    "query": "\nSELECT id, username, email, password, is_admin\nFROM users\nWHERE id = $1\n"
+    "query": "\n\t\t\tSELECT id, username, email, password, is_admin\n\t\t\tFROM users\n\t\t\tWHERE id = $1\n\t\t\t"
   },
-  "f52497d218463232a4ed385117c302737796cc4d9e701a21aad805e135511ab4": {
+  "b9c9c801837ea36b11aff696ebfad932050cf1cbbab6e1c7689d784dfd59e236": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Bpchar"
+        ]
+      }
+    },
+    "query": "\n\t\t\tUPDATE user_tokens\n\t\t\tSET last_used = NOW()\n\t\t\tWHERE token = $1\n\t\t\t"
+  },
+  "d649a71e30a5c39e81343e679d0559edf21e52a72b51f2f4d078aa6bc320c973": {
     "describe": {
       "columns": [
         {
@@ -146,6 +323,20 @@
         ]
       }
     },
-    "query": "\nINSERT INTO users (username, email, password, is_admin)\nVALUES ($1, $2, $3, $4)\nRETURNING id, username, email, password, is_admin\n"
+    "query": "\n\t\t\tINSERT INTO users (username, email, password, is_admin)\n\t\t\tVALUES ($1, $2, $3, $4)\n\t\t\tRETURNING id, username, email, password, is_admin\n\t\t\t"
+  },
+  "f902ec4a118a823d532fb8f9935fcfcd65d0f072c11b623dd3aef673d2193912": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Int4",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n\t\t\t\tINSERT INTO recipe_steps (recipe_id, num, description)\n\t\t\t\tVALUES ($1, $2, $3)\n\t\t\t\t"
   }
 }
