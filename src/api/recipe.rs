@@ -1,7 +1,7 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
-	extract::{Path, State},
+	extract::{Path, Query, State},
 	routing::{get, post},
 	Json, Router,
 };
@@ -11,8 +11,11 @@ use tracing::info;
 use uuid::Uuid;
 
 use crate::{
-	error::{AppResult, AppError},
-	models::{recipe::Recipe, user::User},
+	error::{AppError, AppResult},
+	models::{
+		recipe::{Recipe, RecipeMetadata},
+		user::User,
+	},
 	AppState,
 };
 
@@ -20,6 +23,7 @@ pub fn recipe_router(state: Arc<AppState>) -> Router {
 	Router::new()
 		.route("/recipe/create", post(create_recipe))
 		.route("/recipe/:id", get(get_recipe))
+		.route("/recipe/list", get(list_recipes))
 		.with_state(state)
 }
 
@@ -50,7 +54,9 @@ async fn create_recipe(
 		return Err(AppError::bad_request("Title cannot be empty"));
 	}
 	if ingredients.len() == 0 {
-		return Err(AppError::bad_request("Recipe must have at least one ingredient"));
+		return Err(AppError::bad_request(
+			"Recipe must have at least one ingredient",
+		));
 	}
 	if steps.len() == 0 {
 		return Err(AppError::bad_request("Recipe must have at least one step"));
@@ -68,7 +74,9 @@ async fn create_recipe(
 			return Err(AppError::bad_request("Ingredient unit cannot be empty"));
 		}
 		if quantity < &0.0 {
-			return Err(AppError::bad_request("Ingredient quantity cannot be negative"));
+			return Err(AppError::bad_request(
+				"Ingredient quantity cannot be negative",
+			));
 		}
 	}
 	let recipe = Recipe::create(
@@ -115,4 +123,16 @@ async fn get_recipe(
 			.collect(),
 		steps: recipe.steps.into_iter().map(|s| s.description).collect(),
 	}))
+}
+
+async fn list_recipes(
+	State(state): State<Arc<AppState>>,
+	Query(params): Query<HashMap<String, String>>,
+) -> AppResult<Json<Vec<RecipeMetadata>>> {
+	let recipes = Recipe::list_brief(&state.pool).await?;
+	let limit = params
+		.get("limit")
+		.map(|s| s.parse::<usize>().unwrap_or(10))
+		.unwrap_or(10);
+	Ok(Json(recipes.into_iter().take(limit).collect()))
 }

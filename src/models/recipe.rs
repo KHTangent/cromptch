@@ -1,16 +1,17 @@
 use std::str::FromStr;
 
+use serde::Serialize;
 use sqlx::{types::BigDecimal, PgPool};
 use uuid::Uuid;
 
 use crate::error::{AppError, AppResult};
 
-#[derive(Debug, Clone, sqlx::FromRow)]
-struct RecipeMetadata {
-	id: Uuid,
-	title: String,
-	description: String,
-	author: Uuid,
+#[derive(Debug, Clone, sqlx::FromRow, Serialize)]
+pub struct RecipeMetadata {
+	pub id: Uuid,
+	pub title: String,
+	pub description: String,
+	pub author: Uuid,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow)]
@@ -155,5 +156,19 @@ impl Recipe {
 			steps,
 			ingredients,
 		})
+	}
+
+	pub async fn list_brief(pool: &PgPool) -> AppResult<Vec<RecipeMetadata>> {
+		let recipes = sqlx::query_as!(
+			RecipeMetadata,
+			r#"
+			SELECT id, title, description, author
+			FROM recipes
+			"#,
+		)
+		.fetch_all(pool)
+		.await
+		.map_err(|_| AppError::internal("Error fetching recipes"))?;
+		Ok(recipes)
 	}
 }
