@@ -1,7 +1,10 @@
 <template>
 	<v-container>
-		<h1 class="text-h1 mb-4">Hello world!</h1>
-		<p class="text-body-1">Welcome to this template</p>
+		<h1 class="text-h1 mb-4">Cromptch: Share recipes</h1>
+		<p class="text-body-1 mb-4">
+			Welcome. This is very WIP. The images are just placeholders from Lorem
+			Picsum.
+		</p>
 		<v-row>
 			<v-col v-for="recipe in recipes" :key="recipe.id" cols="12" md="6" lg="4">
 				<RecipeCard :recipe="recipe" />

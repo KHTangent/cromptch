@@ -56,3 +56,15 @@ export async function getRecipeList(
 		return r.json();
 	} else throw r;
 }
+
+export async function getRecipe(id: string): Promise<ApiTypes.Recipe> {
+	let r = await fetch(`${API_URL}/recipe/${id}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	if (r.status === 200) {
+		return r.json();
+	} else throw r;
+}

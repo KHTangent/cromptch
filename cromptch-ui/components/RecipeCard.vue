@@ -1,18 +1,18 @@
 <template>
 	<v-card class="flex-grow-1 d-flex flex-column">
-		<v-card-title class="text-h2 mb-0 pb-0">
+		<v-card-title class="text-h3 my-3">
 			{{ recipe.title }}
 		</v-card-title>
 		<v-card-text class="mt-0 pt-0 flex-grow-1 d-flex flex-column">
-			<a href="/" class="pa-1">
+			<NuxtLink :to="'/recipe/' + recipe.id" class="pa-1">
 				<v-img
 					contain
-					src="previewLink"
+					src="https://picsum.photos/300"
 					aspect-ratio="1"
 					height="300"
-					alt="selectedFilename"
+					alt="Placeholder image"
 				/>
-			</a>
+			</NuxtLink>
 			<span class="text-body-1">
 				{{ recipe.description.substring(0, 100) }}
 			</span>

@@ -19,3 +19,13 @@ export interface RecipeMetadata {
 	description: string;
 	author: string;
 }
+
+export interface Recipe {
+	id: string;
+	title: string;
+	description: string;
+	author: string;
+	authorId: string;
+	ingredients: any[][];
+	steps: string[];
+}
