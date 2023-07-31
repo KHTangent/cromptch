@@ -5,13 +5,24 @@
 			{{ error }}
 		</v-alert>
 		<v-alert type="success" v-if="registrationSuccess" dismissible class="ma-2">
-			Registration successful! You can now <nuxt-link to="/login">log in</nuxt-link>.
+			Registration successful! You can now
+			<nuxt-link to="/login">log in</nuxt-link>.
 		</v-alert>
 		<v-form @submit.prevent="register" class="ma-2">
 			<v-text-field label="Username" v-model="username" required></v-text-field>
 			<v-text-field label="Email" v-model="email" required></v-text-field>
-			<v-text-field label="Password" type="password" v-model="password" required></v-text-field>
-			<v-text-field label="Confirm Password" type="password" v-model="confirmPassword" required></v-text-field>
+			<v-text-field
+				label="Password"
+				type="password"
+				v-model="password"
+				required
+			></v-text-field>
+			<v-text-field
+				label="Confirm Password"
+				type="password"
+				v-model="confirmPassword"
+				required
+			></v-text-field>
 			<v-btn color="primary" class="mt-4" type="submit">Sign up</v-btn>
 		</v-form>
 	</v-container>
@@ -52,5 +63,4 @@ async function register() {
 		error.value = await res.text();
 	}
 }
-
 </script>

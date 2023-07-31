@@ -6,7 +6,12 @@
 		</v-alert>
 		<v-form @submit.prevent="login" class="ma-2">
 			<v-text-field label="Email" v-model="email" required></v-text-field>
-			<v-text-field label="Password" type="password" v-model="password" required></v-text-field>
+			<v-text-field
+				label="Password"
+				type="password"
+				v-model="password"
+				required
+			></v-text-field>
 			<v-btn color="primary" class="mt-4" type="submit">Log in</v-btn>
 		</v-form>
 	</v-container>
@@ -39,5 +44,4 @@ async function login() {
 	localToken.value = user.token;
 	navigateTo("/");
 }
-
 </script>

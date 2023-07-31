@@ -12,7 +12,10 @@ export function register(username: string, email: string, password: string) {
 	});
 }
 
-export async function login(email: string, password: string): Promise<ApiTypes.LoginResponse> {
+export async function login(
+	email: string,
+	password: string,
+): Promise<ApiTypes.LoginResponse> {
 	let r = await fetch(API_URL + "/user/login", {
 		method: "POST",
 		headers: {
@@ -22,21 +25,34 @@ export async function login(email: string, password: string): Promise<ApiTypes.L
 	});
 	if (r.status === 200) {
 		return r.json();
-	}
-	else throw r;
+	} else throw r;
 }
 
-export async function getSelfUser(token: string): Promise<ApiTypes.GetSelfResponse> {
+export async function getSelfUser(
+	token: string,
+): Promise<ApiTypes.GetSelfResponse> {
 	let r = await fetch(API_URL + "/user/self", {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
-			"Authorization": `Bearer ${token}`,
-		}
+			Authorization: `Bearer ${token}`,
+		},
 	});
 	if (r.status === 200) {
 		return r.json();
-	}
-	else throw r;
+	} else throw r;
 }
 
+export async function getRecipeList(
+	limit: number = 10,
+): Promise<ApiTypes.RecipeMetadata[]> {
+	let r = await fetch(`${API_URL}/recipe/list?limit=${limit}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	if (r.status === 200) {
+		return r.json();
+	} else throw r;
+}
