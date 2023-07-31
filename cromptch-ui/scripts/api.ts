@@ -1,6 +1,7 @@
 import * as ApiTypes from "@/scripts/apiTypes";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://cromptch.derg.vip";
+// const API_URL = "http://127.0.0.1:8000";
 
 export function register(
 	username: string,
