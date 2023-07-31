@@ -1,5 +1,41 @@
 {
   "db": "PostgreSQL",
+  "054b4fd1763a68a4d4cc71ef91edbea164ecbe28b170a28a662545811e498a2e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "title",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "author",
+          "ordinal": 3,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n\t\t\tSELECT id, title, description, author\n\t\t\tFROM recipes\n\t\t\t"
+  },
   "07f8ccf7872fc82d82a1e8e02565322f4ed07378e669bab12f6ef7467e83b701": {
     "describe": {
       "columns": [
