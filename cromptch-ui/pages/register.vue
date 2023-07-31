@@ -75,17 +75,17 @@ async function register() {
 		error.value = "Invalid email address";
 		return;
 	}
-	const res = await Api.register(
-		username.value,
-		email.value,
-		password.value,
-		hcaptchaEnabled ? hcaptchaToken.value : undefined,
-	);
-	if (res.status === 200) {
+	try {
+		await Api.register(
+			username.value,
+			email.value,
+			password.value,
+			hcaptchaEnabled ? hcaptchaToken.value : undefined,
+		);
 		error.value = "";
 		registrationSuccess.value = true;
-	} else {
-		error.value = await res.text();
+	} catch (e: any) {
+		error.value = e.data;
 	}
 }
 </script>

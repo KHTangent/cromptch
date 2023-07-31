@@ -5,7 +5,7 @@
 			Welcome. This is very WIP. The images are just placeholders from Lorem
 			Picsum.
 		</p>
-		<v-row>
+		<v-row v-if="recipes.length > 0">
 			<v-col v-for="recipe in recipes" :key="recipe.id" cols="12" md="6" lg="4">
 				<RecipeCard :recipe="recipe" />
 			</v-col>
@@ -14,6 +14,9 @@
 </template>
 <script setup lang="ts">
 import * as API from "@/scripts/api";
-
-const recipes = await API.getRecipeList();
+import * as APITypes from "@/scripts/apiTypes";
+let recipes: APITypes.RecipeMetadata[] = [];
+try {
+	recipes = await API.getRecipeList();
+} catch (e: any) {}
 </script>
