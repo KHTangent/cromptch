@@ -23,6 +23,12 @@
 				v-model="confirmPassword"
 				required
 			></v-text-field>
+			<vue-hcaptcha
+				v-if="hcaptchaEnabled"
+				:sitekey="hcaptchaSiteKey"
+				@verify="onHCVerify"
+				@expired="onHCExpired"
+			></vue-hcaptcha>
 			<v-btn color="primary" class="mt-4" type="submit">Sign up</v-btn>
 		</v-form>
 	</v-container>
@@ -30,13 +36,27 @@
 <script lang="ts" setup>
 import * as Api from "@/scripts/api";
 
+const appConfig = useAppConfig();
+
+const hcaptchaSiteKey = computed(() => appConfig.hcaptchaSiteKey as string);
+const hcaptchaEnabled = computed(() => hcaptchaSiteKey.value.length > 0);
+
 const username = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const hcaptchaToken = ref("");
 
 const error = ref("");
 const registrationSuccess = ref(false);
+
+function onHCVerify(token: string, e: any) {
+	hcaptchaToken.value = token;
+}
+
+function onHCExpired() {
+	hcaptchaToken.value = "";
+}
 
 async function register() {
 	if (password.value !== confirmPassword.value) {
@@ -55,7 +75,12 @@ async function register() {
 		error.value = "Invalid email address";
 		return;
 	}
-	const res = await Api.register(username.value, email.value, password.value);
+	const res = await Api.register(
+		username.value,
+		email.value,
+		password.value,
+		hcaptchaEnabled ? hcaptchaToken.value : undefined,
+	);
 	if (res.status === 200) {
 		error.value = "";
 		registrationSuccess.value = true;

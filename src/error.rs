@@ -30,7 +30,9 @@ impl fmt::Display for AppError {
 			AppErrorKind::Unauthorized => write!(f, "Unauthorized: {}", self.message),
 			AppErrorKind::Forbidden => write!(f, "Forbidden: {}", self.message),
 			AppErrorKind::NotFound => write!(f, "Not Found: {}", self.message),
-			AppErrorKind::InternalServerError => write!(f, "Internal Server Error: {}", self.message),
+			AppErrorKind::InternalServerError => {
+				write!(f, "Internal Server Error: {}", self.message)
+			}
 		}
 	}
 }
@@ -90,4 +92,3 @@ impl AppError {
 		}
 	}
 }
-

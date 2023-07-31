@@ -9,17 +9,32 @@ use axum::{
 	routing::get,
 	Router,
 };
+use shuttle_secrets::SecretStore;
 use sqlx::PgPool;
 use tower_http::cors::CorsLayer;
 use tracing::info;
 
 pub struct AppState {
 	pub pool: PgPool,
+	pub secret_store: SecretStore,
 }
 
 #[shuttle_runtime::main]
-async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::ShuttleAxum {
+async fn axum(
+	#[shuttle_shared_db::Postgres] pool: PgPool,
+	#[shuttle_secrets::Secrets] secret_store: SecretStore,
+) -> shuttle_axum::ShuttleAxum {
 	info!("Starting server...");
+
+	if let Some(_) = secret_store.get("HCAPTCHA_SITE_KEY") {
+		if let Some(_) = secret_store.get("HCAPTCHA_SECRET") {
+			info!("hCaptcha enabled");
+		} else {
+			panic!("hCaptcha secret not found");
+		}
+	} else {
+		info!("hCaptcha disabled");
+	}
 
 	info!("Running database migrations...");
 	sqlx::migrate!()
@@ -28,7 +43,7 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
 		.expect("Migrations failed to run");
 	info!("Database migrations complete!");
 
-	let app_state = Arc::new(AppState { pool });
+	let app_state = Arc::new(AppState { pool, secret_store });
 
 	info!("Creating routes...");
 	let router = Router::new()

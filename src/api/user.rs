@@ -23,10 +23,17 @@ pub fn user_router(state: Arc<AppState>) -> Router {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateUserRequest {
 	pub username: String,
 	pub email: String,
 	pub password: String,
+	pub hcaptcha_token: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct HcaptchaResponse {
+	success: bool,
 }
 
 async fn create_user(
@@ -35,9 +42,33 @@ async fn create_user(
 		username,
 		email,
 		password,
+		hcaptcha_token,
 	}): Json<CreateUserRequest>,
 ) -> AppResult<&'static str> {
 	info!("Creating user {}...", username);
+	if let Some(_) = &state.secret_store.get("HCAPTCHA_SITE_KEY") {
+		let hc_secret_key = state.secret_store.get("HCAPTCHA_SECRET").unwrap();
+		match hcaptcha_token {
+			None => return Err(AppError::bad_request("Missing hCaptcha token")),
+			Some(hc_token) => {
+				let http_client = reqwest::Client::new();
+				let form_body = [("response", &hc_token), ("secret", &hc_secret_key)];
+				let hc_request = http_client
+					.post("https://hcaptcha.com/siteverify")
+					.form(&form_body)
+					.send()
+					.await
+					.map_err(|_| AppError::internal("Failed to verify hCaptcha"))?;
+				let hc_response: HcaptchaResponse = hc_request
+					.json()
+					.await
+					.map_err(|_| AppError::internal("Failed to parse hCaptcha response"))?;
+				if !hc_response.success {
+					return Err(AppError::bad_request("Invalid hCaptcha token"));
+				}
+			}
+		}
+	}
 	if username.len() < 3 {
 		return Err(AppError::bad_request(
 			"Username must be at least 3 characters",

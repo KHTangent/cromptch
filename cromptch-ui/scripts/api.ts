@@ -2,13 +2,22 @@ import * as ApiTypes from "@/scripts/apiTypes";
 
 const API_URL = "http://127.0.0.1:8000";
 
-export function register(username: string, email: string, password: string) {
+export function register(
+	username: string,
+	email: string,
+	password: string,
+	hcaptchaToken?: string,
+) {
+	let body: Record<string, string> = { username, email, password };
+	if (hcaptchaToken) {
+		body["hcaptchaToken"] = hcaptchaToken;
+	}
 	return fetch(API_URL + "/user/create", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ username, email, password }),
+		body: JSON.stringify(body),
 	});
 }
 
