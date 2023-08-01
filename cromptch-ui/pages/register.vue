@@ -35,10 +35,11 @@
 </template>
 <script lang="ts" setup>
 import * as Api from "@/scripts/api";
+import VueHcaptcha from "@hcaptcha/vue3-hcaptcha";
 
-const appConfig = useAppConfig();
+const appConfig = useRuntimeConfig();
 
-const hcaptchaSiteKey = computed(() => appConfig.hcaptchaSiteKey as string);
+const hcaptchaSiteKey = computed(() => appConfig.public.hcaptchaSiteKey as string);
 const hcaptchaEnabled = computed(() => hcaptchaSiteKey.value.length > 0);
 
 const username = ref("");
