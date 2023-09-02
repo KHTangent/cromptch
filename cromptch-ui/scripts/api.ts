@@ -73,3 +73,21 @@ export async function getRecipe(id: string): Promise<ApiTypes.Recipe> {
 	});
 	return r;
 }
+
+export async function createRecipe(
+	body: ApiTypes.CreateRecipeRequest,
+	token: string,
+): Promise<ApiTypes.CreateRecipeResponse> {
+	let r = await $fetch<ApiTypes.CreateRecipeResponse>(
+		`${API_URL}/recipe/create`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body,
+		},
+	);
+	return r;
+}

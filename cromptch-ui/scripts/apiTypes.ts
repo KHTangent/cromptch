@@ -29,3 +29,14 @@ export interface Recipe {
 	ingredients: any[][];
 	steps: string[];
 }
+
+export interface CreateRecipeRequest {
+	title: string;
+	description: string;
+	ingredients: any[][];
+	steps: string[];
+}
+
+export interface CreateRecipeResponse {
+	id: string;
+}
