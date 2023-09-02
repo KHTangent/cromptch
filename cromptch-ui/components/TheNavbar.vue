@@ -1,5 +1,5 @@
 <template>
-	<v-app-bar>
+	<v-app-bar class="pr-4">
 		<v-app-bar-nav-icon>
 			<v-icon>
 				{{ navIcon }}

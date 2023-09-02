@@ -2,6 +2,9 @@
 	<v-container>
 		<h1 class="text-h1 mb-4">{{ recipe.title }}</h1>
 		<p class="text-body-1">{{ recipe.description }}</p>
+		<p class="text-body-1">
+			Uploaded by <strong>{{ recipe.author }}</strong>
+		</p>
 		<v-divider class="my-2"></v-divider>
 		<v-row>
 			<v-col cols="12" md="4">
