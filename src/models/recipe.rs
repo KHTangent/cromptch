@@ -61,7 +61,7 @@ impl Recipe {
 			description,
 			author
 		)
-		.execute(&mut tx)
+		.execute(&mut *tx)
 		.await
 		.map_err(|_| AppError::internal("Error creating recipe"))?;
 
@@ -79,7 +79,7 @@ impl Recipe {
 				unit,
 				name
 			)
-			.execute(&mut tx)
+			.execute(&mut *tx)
 			.await
 			.map_err(|_| AppError::internal("Error creating recipe"))?;
 		}
@@ -94,7 +94,7 @@ impl Recipe {
 				num as i32,
 				step
 			)
-			.execute(&mut tx)
+			.execute(&mut *tx)
 			.await
 			.map_err(|_| AppError::internal("Error creating recipe"))?;
 		}
