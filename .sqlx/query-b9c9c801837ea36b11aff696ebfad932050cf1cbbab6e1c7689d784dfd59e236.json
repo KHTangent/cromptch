@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tUPDATE user_tokens\n\t\t\tSET last_used = NOW()\n\t\t\tWHERE token = $1\n\t\t\t",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bpchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b9c9c801837ea36b11aff696ebfad932050cf1cbbab6e1c7689d784dfd59e236"
+}

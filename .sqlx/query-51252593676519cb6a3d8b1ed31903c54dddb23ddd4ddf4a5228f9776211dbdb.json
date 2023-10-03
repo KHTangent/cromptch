@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tSELECT id, username, email, password, is_admin\n\t\t\tFROM users\n\t\t\tWHERE email = $1\n\t\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "password",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_admin",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "51252593676519cb6a3d8b1ed31903c54dddb23ddd4ddf4a5228f9776211dbdb"
+}

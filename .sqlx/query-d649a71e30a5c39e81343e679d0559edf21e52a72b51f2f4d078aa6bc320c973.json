@@ -1,0 +1,49 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tINSERT INTO users (username, email, password, is_admin)\n\t\t\tVALUES ($1, $2, $3, $4)\n\t\t\tRETURNING id, username, email, password, is_admin\n\t\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "password",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_admin",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d649a71e30a5c39e81343e679d0559edf21e52a72b51f2f4d078aa6bc320c973"
+}

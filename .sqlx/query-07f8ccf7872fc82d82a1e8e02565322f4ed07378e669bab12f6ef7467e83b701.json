@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tSELECT quantity, unit, name\n\t\t\tFROM recipe_ingredients\n\t\t\tWHERE recipe_id = $1\n\t\t\tORDER BY num\n\t\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "quantity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 1,
+        "name": "unit",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "07f8ccf7872fc82d82a1e8e02565322f4ed07378e669bab12f6ef7467e83b701"
+}

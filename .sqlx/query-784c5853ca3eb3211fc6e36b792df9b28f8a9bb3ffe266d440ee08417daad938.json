@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tSELECT u.id, u.username, u.email, u.password, u.is_admin\n\t\t\tFROM users u INNER JOIN user_tokens t ON u.id = t.user_id\n\t\t\tWHERE t.token = $1\n\t\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "password",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_admin",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Bpchar"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "784c5853ca3eb3211fc6e36b792df9b28f8a9bb3ffe266d440ee08417daad938"
+}
