@@ -21,9 +21,9 @@ use crate::{
 
 pub fn recipe_router(state: Arc<AppState>) -> Router {
 	Router::new()
-		.route("/recipe/create", post(create_recipe))
-		.route("/recipe/:id", get(get_recipe))
-		.route("/recipe/list", get(list_recipes))
+		.route("/api/recipe/create", post(create_recipe))
+		.route("/api/recipe/:id", get(get_recipe))
+		.route("/api/recipe/list", get(list_recipes))
 		.with_state(state)
 }
 

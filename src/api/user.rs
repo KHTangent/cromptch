@@ -16,9 +16,9 @@ use crate::{
 
 pub fn user_router(state: Arc<AppState>) -> Router {
 	Router::new()
-		.route("/user/create", post(create_user))
-		.route("/user/login", post(login_user))
-		.route("/user/self", get(get_self))
+		.route("/api/user/create", post(create_user))
+		.route("/api/user/login", post(login_user))
+		.route("/api/user/self", get(get_self))
 		.with_state(state)
 }
 

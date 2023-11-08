@@ -57,7 +57,7 @@ async fn main() {
 
 	info!("Creating routes...");
 	let router = Router::new()
-		.route("/", get(index))
+		.route("/api", get(index))
 		.merge(api::user::user_router(app_state.clone()))
 		.merge(api::recipe::recipe_router(app_state.clone()))
 		.layer(
@@ -73,7 +73,7 @@ async fn main() {
 
 	let port = env::var("PORT").unwrap_or("3001".to_string());
 	info!("Starting server on port {}", port);
-	let addr = SocketAddr::from(([0, 0, 0, 0], u16::from_str(&port).expect("Invalid port number")));
+	let addr = SocketAddr::from(([127, 0, 0, 1], u16::from_str(&port).expect("Invalid port number")));
 	axum::Server::bind(&addr)
 		.serve(router.into_make_service())
 		.await
