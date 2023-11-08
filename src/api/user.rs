@@ -46,13 +46,12 @@ async fn create_user(
 	}): Json<CreateUserRequest>,
 ) -> AppResult<&'static str> {
 	info!("Creating user {}...", username);
-	if let Some(_) = &state.secret_store.get("HCAPTCHA_SITE_KEY") {
-		let hc_secret_key = state.secret_store.get("HCAPTCHA_SECRET").unwrap();
+	if !state.secrets.hcaptcha_site_key.is_empty() {
 		match hcaptcha_token {
 			None => return Err(AppError::bad_request("Missing hCaptcha token")),
 			Some(hc_token) => {
 				let http_client = reqwest::Client::new();
-				let form_body = [("response", &hc_token), ("secret", &hc_secret_key)];
+				let form_body = [("response", &hc_token), ("secret", &state.secrets.hcaptcha_secret)];
 				let hc_request = http_client
 					.post("https://hcaptcha.com/siteverify")
 					.form(&form_body)

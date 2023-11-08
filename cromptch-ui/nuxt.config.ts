@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 	modules: ["./modules/vuetify.ts"],
 	runtimeConfig: {
 		public: {
-			hcaptchaSiteKey: "aaa",
+			hcaptchaSiteKey: "",
 		}
 	}
 });
