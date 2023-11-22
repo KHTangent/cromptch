@@ -1,6 +1,6 @@
 import * as ApiTypes from "@/scripts/apiTypes";
 
-const API_URL = "http://127.0.0.1:3001";
+const API_URL = "http://127.0.0.1:3001/api";
 
 export function register(
 	username: string,
