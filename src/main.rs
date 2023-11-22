@@ -2,9 +2,9 @@ mod api;
 mod error;
 mod models;
 
-use std::str::FromStr;
-use std::{sync::Arc, net::SocketAddr};
 use std::env;
+use std::str::FromStr;
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
 	http::{self, HeaderValue, Method},
@@ -15,14 +15,15 @@ use sqlx::PgPool;
 use tower_http::cors::CorsLayer;
 use tracing::info;
 
-pub struct Secrets {
+pub struct Config {
 	pub hcaptcha_site_key: String,
 	pub hcaptcha_secret: String,
+	pub pictrs_url: String,
 }
 
 pub struct AppState {
 	pub pool: PgPool,
-	pub secrets: Secrets,
+	pub secrets: Config,
 }
 
 #[tokio::main]
@@ -32,12 +33,16 @@ async fn main() {
 	info!("Starting server...");
 	dotenv::dotenv().ok();
 
-	let secrets = Secrets {
+	let secrets = Config {
 		hcaptcha_site_key: env::var("HCAPTCHA_SITE_KEY").unwrap_or("".to_string()),
 		hcaptcha_secret: env::var("HCAPTCHA_SECRET").unwrap_or("".to_string()),
+		pictrs_url: env::var("PICTRS_URL").unwrap_or("".to_string()),
 	};
 	if secrets.hcaptcha_site_key.is_empty() {
 		info!("HCAPTCHA_SITE_KEY not set, captcha will not be used");
+	}
+	if secrets.pictrs_url.is_empty() {
+		info!("PICTRS_URL not set, image features will be disabled");
 	}
 
 	info!("Connecting to database...");
@@ -60,6 +65,7 @@ async fn main() {
 		.route("/api", get(index))
 		.merge(api::user::user_router(app_state.clone()))
 		.merge(api::recipe::recipe_router(app_state.clone()))
+		.merge(api::image::image_router(app_state.clone()))
 		.layer(
 			CorsLayer::new()
 				.allow_origin([
@@ -73,7 +79,10 @@ async fn main() {
 
 	let port = env::var("PORT").unwrap_or("3001".to_string());
 	info!("Starting server on port {}", port);
-	let addr = SocketAddr::from(([127, 0, 0, 1], u16::from_str(&port).expect("Invalid port number")));
+	let addr = SocketAddr::from((
+		[127, 0, 0, 1],
+		u16::from_str(&port).expect("Invalid port number"),
+	));
 	axum::Server::bind(&addr)
 		.serve(router.into_make_service())
 		.await

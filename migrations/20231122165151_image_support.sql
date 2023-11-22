@@ -1,0 +1,12 @@
+CREATE TABLE images (
+	id UUID PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
+	delete_token UUID UNIQUE NOT NULL
+);
+
+ALTER TABLE recipes
+ADD COLUMN image_id UUID REFERENCES images(id)
+ON DELETE SET NULL;
+
+ALTER TABLE recipe_steps
+ADD COLUMN image_id UUID REFERENCES images(id)
+ON DELETE SET NULL;
