@@ -119,7 +119,7 @@
 </template>
 <script setup lang="ts">
 import * as API from "@/scripts/api";
-import { CreateRecipeRequest, CreateRecipeResponse } from "@/scripts/apiTypes";
+import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
 import { mdiClose, mdiPlus } from "@mdi/js";
 
 const icons = { mdiClose, mdiPlus };
