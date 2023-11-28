@@ -10,7 +10,8 @@ use axum::{
 use uuid::Uuid;
 
 use crate::{
-	error::{AppError, AppResult},
+	error::AppResult,
+	external::image::{get_image_bytes, get_thumbnail_bytes},
 	AppState,
 };
 
@@ -28,19 +29,11 @@ async fn get_image(
 	State(state): State<Arc<AppState>>,
 	Path(id): Path<Uuid>,
 ) -> AppResult<impl IntoResponse> {
-	let full_picture_url = format!("{}/image/original/{}.webp", state.secrets.pictrs_url, id);
-	println!("Fetching image from {}", full_picture_url);
-	let response = reqwest::get(&full_picture_url)
-		.await
-		.map_err(|_| AppError::not_found("Image not found"))?;
-	let bytes = response
-		.bytes()
-		.await
-		.map_err(|_| AppError::internal("Error fetching image"))?;
+	let image_bytes = get_image_bytes(&state.secrets.pictrs_url, &id).await?;
 	Ok((
 		http::StatusCode::OK,
 		[(http::header::CONTENT_TYPE, "image/webp")],
-		bytes,
+		image_bytes,
 	))
 }
 
@@ -48,21 +41,10 @@ async fn get_thumbnail(
 	State(state): State<Arc<AppState>>,
 	Path(id): Path<Uuid>,
 ) -> AppResult<impl IntoResponse> {
-	let thumbnail_url = format!(
-		"{}/image/process.webp?thumbnail=200&src={}.webp",
-		state.secrets.pictrs_url, id
-	);
-	println!("Fetching image from {}", thumbnail_url);
-	let response = reqwest::get(&thumbnail_url)
-		.await
-		.map_err(|_| AppError::not_found("Image not found"))?;
-	let bytes = response
-		.bytes()
-		.await
-		.map_err(|_| AppError::internal("Error fetching image"))?;
+	let image_bytes = get_thumbnail_bytes(&state.secrets.pictrs_url, &id).await?;
 	Ok((
 		http::StatusCode::OK,
 		[(http::header::CONTENT_TYPE, "image/webp")],
-		bytes,
+		image_bytes,
 	))
 }
