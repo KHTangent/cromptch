@@ -7,6 +7,7 @@ use uuid::Uuid;
 use crate::error::{AppError, AppResult};
 
 #[derive(Debug, Clone, sqlx::FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RecipeMetadata {
 	pub id: Uuid,
 	pub title: String,

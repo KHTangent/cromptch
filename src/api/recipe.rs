@@ -28,6 +28,7 @@ pub fn recipe_router(state: Arc<AppState>) -> Router {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct CreateRecipeRequest {
 	title: String,
 	description: String,
