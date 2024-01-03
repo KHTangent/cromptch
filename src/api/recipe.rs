@@ -32,7 +32,9 @@ struct CreateRecipeRequest {
 	title: String,
 	description: String,
 	ingredients: Vec<(f32, String, String)>,
+	image_id: Option<Uuid>,
 	steps: Vec<String>,
+	step_images: Vec<Option<Uuid>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -47,7 +49,9 @@ async fn create_recipe(
 		title,
 		description,
 		ingredients,
+		image_id,
 		steps,
+		step_images,
 	}): Json<CreateRecipeRequest>,
 ) -> AppResult<Json<CreateRecipeResponse>> {
 	if title.is_empty() {
@@ -56,6 +60,11 @@ async fn create_recipe(
 	if ingredients.len() == 0 {
 		return Err(AppError::bad_request(
 			"Recipe must have at least one ingredient",
+		));
+	}
+	if steps.len() != step_images.len() {
+		return Err(AppError::bad_request(
+			"Number of steps must match number of step images",
 		));
 	}
 	if steps.len() == 0 {
@@ -85,7 +94,9 @@ async fn create_recipe(
 		&description,
 		&user.id,
 		&ingredients,
+		image_id,
 		&steps,
+		&step_images,
 	)
 	.await?;
 	info!("User {} created recipe {}", user.id, recipe.id);
