@@ -1,6 +1,7 @@
 CREATE TABLE images (
 	id UUID PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
-	delete_token UUID UNIQUE NOT NULL
+	delete_token UUID UNIQUE NOT NULL,
+	owner UUID REFERENCES users(id) ON DELETE CASCADE
 );
 
 ALTER TABLE recipes

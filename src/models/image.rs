@@ -10,14 +10,20 @@ pub struct Image {
 }
 
 impl Image {
-	pub async fn create(pool: &PgPool, id: &Uuid, delete_token: &Uuid) -> AppResult<Self> {
+	pub async fn create(
+		pool: &PgPool,
+		id: &Uuid,
+		delete_token: &Uuid,
+		owner: &Uuid,
+	) -> AppResult<Self> {
 		sqlx::query!(
 			r#"
-                INSERT INTO images (id, delete_token)
-                VALUES ($1, $2)
+                INSERT INTO images (id, delete_token, owner)
+                VALUES ($1, $2, $3)
             "#,
 			id,
 			delete_token,
+			owner,
 		)
 		.execute(pool)
 		.await

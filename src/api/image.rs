@@ -16,7 +16,8 @@ use crate::{
 		self,
 		image::{get_image_bytes, get_thumbnail_bytes},
 	},
-	models, AppState,
+	models::{self, user::User},
+	AppState,
 };
 
 pub fn image_router(state: Arc<AppState>) -> Router {
@@ -61,6 +62,7 @@ struct UploadImageResponse {
 
 async fn upload_image(
 	State(state): State<Arc<AppState>>,
+	user: User,
 	mut multipart: Multipart,
 ) -> AppResult<Json<UploadImageResponse>> {
 	let field = multipart
@@ -102,7 +104,8 @@ async fn upload_image(
 	let delete_token = Uuid::parse_str(&uploaded.delete_token)
 		.map_err(|_| AppError::internal("Image upload failed"))?;
 
-	let inserted = models::image::Image::create(&state.pool, &uploaded_id, &delete_token).await?;
+	let inserted =
+		models::image::Image::create(&state.pool, &uploaded_id, &delete_token, &user.id).await?;
 
 	Ok(Json(UploadImageResponse { id: inserted.id }))
 }
