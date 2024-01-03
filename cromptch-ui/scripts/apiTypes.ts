@@ -17,6 +17,7 @@ export interface RecipeMetadata {
 	id: string;
 	title: string;
 	description: string;
+	imageId?: string;
 	author: string;
 }
 
@@ -27,14 +28,18 @@ export interface Recipe {
 	author: string;
 	authorId: string;
 	ingredients: any[][];
+	imageId?: string;
 	steps: string[];
+	stepImages: Array<string | null>;
 }
 
 export interface CreateRecipeRequest {
 	title: string;
 	description: string;
+	imageId?: string;
 	ingredients: any[][];
 	steps: string[];
+	stepImages: Array<string | null>;
 }
 
 export interface CreateRecipeResponse {

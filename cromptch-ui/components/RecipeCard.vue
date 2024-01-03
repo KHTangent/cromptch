@@ -7,7 +7,7 @@
 			<NuxtLink :to="'/recipe/' + recipe.id" class="pa-1">
 				<v-img
 					contain
-					src="https://picsum.photos/300"
+					:src="imageSrc()"
 					aspect-ratio="1"
 					height="300"
 					alt="Placeholder image"
@@ -22,12 +22,20 @@
 
 <script setup lang="ts">
 import { type PropType } from "vue";
+import * as Api from "@/scripts/api";
 import * as APITypes from "@/scripts/apiTypes";
 
-defineProps({
+const props = defineProps({
 	recipe: {
 		type: Object as PropType<APITypes.RecipeMetadata>,
 		required: true,
 	},
 });
+
+function imageSrc() {
+	if (props.recipe.imageId) {
+		return Api.getImageThumbnailUrl(props.recipe.imageId!);
+	}
+	return "";
+}
 </script>

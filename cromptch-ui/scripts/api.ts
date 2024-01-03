@@ -21,6 +21,14 @@ export function register(
 	});
 }
 
+export function getImageUrl(id: string): string {
+	return `${API_URL}/image/${id}`;
+}
+
+export function getImageThumbnailUrl(id: string): string {
+	return `${API_URL}/image/thumbnail/${id}`;
+}
+
 export async function login(
 	email: string,
 	password: string,
