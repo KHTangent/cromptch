@@ -40,3 +40,7 @@ export interface CreateRecipeRequest {
 export interface CreateRecipeResponse {
 	id: string;
 }
+
+export interface ImageUploadResponse {
+	id: string;
+}

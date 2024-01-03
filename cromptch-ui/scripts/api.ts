@@ -90,3 +90,22 @@ export async function createRecipe(
 	);
 	return r;
 }
+
+export async function uploadImage(
+	imageFile: Blob,
+	token: string,
+): Promise<ApiTypes.ImageUploadResponse> {
+	let body = new FormData();
+	body.set("file", imageFile);
+	let r = await $fetch<ApiTypes.ImageUploadResponse>(
+		`${API_URL}/image`,
+		{
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			body,
+		},
+	);
+	return r;
+}
