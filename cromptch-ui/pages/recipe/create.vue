@@ -26,6 +26,17 @@
 				label="Description"
 				class="ma-3"
 			></v-textarea>
+			<v-btn
+				block
+				@click="mainImageDialogOpen = true"
+			>
+				Add image
+			</v-btn>
+			<ImageUploadDialog
+				title="Main image"
+				v-model:open="mainImageDialogOpen"
+				v-model:uploadedUuid="selectedMainImage"
+			/>
 			<v-divider class="my-2"></v-divider>
 			<h2 class="text-h2 my-4">Ingredients</h2>
 			<v-row>
@@ -142,6 +153,8 @@ const uploading = ref(false);
 const title = ref("");
 const description = ref("");
 const steps = ref<string[]>([""]);
+const selectedMainImage = ref("");
+const mainImageDialogOpen = ref(false);
 const ingredients = ref<any[][]>([[0, "", ""]]);
 
 const userToken = useToken();
@@ -174,11 +187,16 @@ async function submitAndRedirect() {
 		return;
 	}
 	uploading.value = true;
+	let stepImages = new Array<string | null>(steps.value.length);
+	stepImages.fill(null);
+
 	const recipe: CreateRecipeRequest = {
 		title: title.value,
 		description: description.value,
 		ingredients: ingredients.value.map((e) => [parseFloat(e[0]), e[1], e[2]]),
+		imageId: selectedMainImage.value.length > 0 ? selectedMainImage.value : undefined,
 		steps: steps.value,
+		stepImages: stepImages,
 	};
 	let response: CreateRecipeResponse;
 	try {

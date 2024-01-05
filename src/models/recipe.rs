@@ -7,11 +7,13 @@ use uuid::Uuid;
 use crate::error::{AppError, AppResult};
 
 #[derive(Debug, Clone, sqlx::FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RecipeMetadata {
 	pub id: Uuid,
 	pub title: String,
 	pub description: String,
 	pub author: Uuid,
+	pub image_id: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, sqlx::FromRow)]
@@ -24,6 +26,7 @@ pub struct RecipeIngredient {
 #[derive(Debug, Clone, sqlx::FromRow)]
 pub struct RecipeStep {
 	pub description: String,
+	pub image_id: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]
@@ -43,8 +46,13 @@ impl Recipe {
 		description: &String,
 		author: &Uuid,
 		ingredients: &Vec<(f32, String, String)>,
+		image_id: Option<Uuid>,
 		steps: &Vec<String>,
+		step_images: &Vec<Option<Uuid>>,
 	) -> AppResult<Recipe> {
+		if steps.len() != step_images.len() {
+			return Err(AppError::internal("Error creating recipe"));
+		}
 		let mut tx = pool
 			.begin()
 			.await
@@ -53,13 +61,14 @@ impl Recipe {
 		let id = Uuid::new_v4();
 		sqlx::query!(
 			r#"
-			INSERT INTO recipes (id, title, description, author)
-			VALUES ($1, $2, $3, $4)
+			INSERT INTO recipes (id, title, description, author, image_id)
+			VALUES ($1, $2, $3, $4, $5)
 			"#,
 			id,
 			title,
 			description,
-			author
+			author,
+			image_id
 		)
 		.execute(&mut *tx)
 		.await
@@ -87,12 +96,13 @@ impl Recipe {
 		for (num, step) in steps.iter().enumerate() {
 			sqlx::query!(
 				r#"
-				INSERT INTO recipe_steps (recipe_id, num, description)
-				VALUES ($1, $2, $3)
+				INSERT INTO recipe_steps (recipe_id, num, description, image_id)
+				VALUES ($1, $2, $3, $4)
 				"#,
 				id,
 				num as i32,
-				step
+				step,
+				step_images[num]
 			)
 			.execute(&mut *tx)
 			.await
@@ -110,7 +120,7 @@ impl Recipe {
 		let metadata = sqlx::query_as!(
 			RecipeMetadata,
 			r#"
-			SELECT id, title, description, author
+			SELECT id, title, description, author, image_id
 			FROM recipes
 			WHERE id = $1
 			"#,
@@ -137,7 +147,7 @@ impl Recipe {
 		let steps = sqlx::query_as!(
 			RecipeStep,
 			r#"
-			SELECT description
+			SELECT description, image_id
 			FROM recipe_steps
 			WHERE recipe_id = $1
 			ORDER BY num
@@ -162,7 +172,7 @@ impl Recipe {
 		let recipes = sqlx::query_as!(
 			RecipeMetadata,
 			r#"
-			SELECT id, title, description, author
+			SELECT id, title, description, author, image_id
 			FROM recipes
 			"#,
 		)

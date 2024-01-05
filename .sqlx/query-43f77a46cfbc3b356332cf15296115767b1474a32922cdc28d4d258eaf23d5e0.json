@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n\t\t\tSELECT id, title, description, author\n\t\t\tFROM recipes\n\t\t\t",
+  "query": "\n\t\t\tSELECT id, title, description, author, image_id\n\t\t\tFROM recipes\n\t\t\tWHERE id = $1\n\t\t\t",
   "describe": {
     "columns": [
       {
@@ -22,17 +22,25 @@
         "ordinal": 3,
         "name": "author",
         "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "image_id",
+        "type_info": "Uuid"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Uuid"
+      ]
     },
     "nullable": [
       false,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
-  "hash": "054b4fd1763a68a4d4cc71ef91edbea164ecbe28b170a28a662545811e498a2e"
+  "hash": "43f77a46cfbc3b356332cf15296115767b1474a32922cdc28d4d258eaf23d5e0"
 }

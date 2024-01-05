@@ -21,6 +21,14 @@ export function register(
 	});
 }
 
+export function getImageUrl(id: string): string {
+	return `${API_URL}/image/${id}`;
+}
+
+export function getImageThumbnailUrl(id: string): string {
+	return `${API_URL}/image/thumbnail/${id}`;
+}
+
 export async function login(
 	email: string,
 	password: string,
@@ -83,6 +91,25 @@ export async function createRecipe(
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body,
+		},
+	);
+	return r;
+}
+
+export async function uploadImage(
+	imageFile: Blob,
+	token: string,
+): Promise<ApiTypes.ImageUploadResponse> {
+	let body = new FormData();
+	body.set("file", imageFile);
+	let r = await $fetch<ApiTypes.ImageUploadResponse>(
+		`${API_URL}/image`,
+		{
+			method: "POST",
+			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 			body,

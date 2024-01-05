@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\t\tINSERT INTO recipe_steps (recipe_id, num, description, image_id)\n\t\t\t\tVALUES ($1, $2, $3, $4)\n\t\t\t\t",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fe0d3fbf1aa6bbcf263bcae0ea82a7c4cbb3d2bb7f4d06819daac275c51701cf"
+}

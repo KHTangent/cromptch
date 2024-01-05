@@ -7,6 +7,7 @@ use std::env;
 use std::str::FromStr;
 use std::{net::SocketAddr, sync::Arc};
 
+use axum::extract::DefaultBodyLimit;
 use axum::{
 	http::{self, HeaderValue, Method},
 	routing::get,
@@ -75,7 +76,8 @@ async fn main() {
 				])
 				.allow_headers([http::header::AUTHORIZATION, http::header::CONTENT_TYPE])
 				.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE]),
-		);
+		)
+		.layer(DefaultBodyLimit::max(1024 * 1024 * 10));
 	info!("Routes created!");
 
 	let port = env::var("PORT").unwrap_or("3001".to_string());

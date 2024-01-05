@@ -51,7 +51,10 @@ async fn create_user(
 			None => return Err(AppError::bad_request("Missing hCaptcha token")),
 			Some(hc_token) => {
 				let http_client = reqwest::Client::new();
-				let form_body = [("response", &hc_token), ("secret", &state.secrets.hcaptcha_secret)];
+				let form_body = [
+					("response", &hc_token),
+					("secret", &state.secrets.hcaptcha_secret),
+				];
 				let hc_request = http_client
 					.post("https://hcaptcha.com/siteverify")
 					.form(&form_body)
