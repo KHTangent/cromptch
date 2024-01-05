@@ -1,6 +1,6 @@
 <template>
-	<v-dialog max-width="1280px" v-model="modalOpen" @click:outside="close">
-		<v-card>
+	<v-dialog max-width="640px" v-model="modalOpen" @click:outside="close">
+		<v-card class="ma-4">
 			<v-card-text>
 				<h3 v-if="title.length > 0" class="text-h3 mb-2">{{ title }}</h3>
 			</v-card-text>
@@ -10,6 +10,7 @@
 			<v-container>
 				<v-file-input
 					show-size
+					:label="fileInputLabel"
 					v-model="selectedFile"
 					:accept="acceptTypes"
 					:error="selectionError.length > 0"
@@ -39,6 +40,10 @@ const props = defineProps({
 	maxSize: {
 		type: Number,
 		default: 10000000
+	},
+	fileInputLabel: {
+		type: String,
+		default: "Select file"
 	},
 	acceptTypes: {
 		type: String,
