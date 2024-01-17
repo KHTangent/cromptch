@@ -67,10 +67,13 @@
 			</v-col>
 			<v-col cols="12" md="6" lg="8">
 				<h2 class="text-h2">Steps</h2>
-				<p class="text-body-1 ma-3" v-for="(step, i) in recipe.steps" :key="i">
-					<strong>Step {{ i + 1 }}:</strong>
-					{{ step }}
-				</p>
+				<div v-for="(step, i) in recipe.steps">
+					<p class="text-body-1 ma-3" :key="i">
+						<strong>Step {{ i + 1 }}:</strong>
+						{{ step }}
+					</p>
+					<v-img v-if="recipe.stepImages[i]" :src="getStepImageUrl(i)" max-height="500"></v-img>
+				</div>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -103,6 +106,13 @@ function getHeaderImageUrl(): string {
 		return "";
 	}
 	return API.getImageUrl(recipe.imageId);
+}
+
+function getStepImageUrl(index: number): string {
+	if (!recipe.stepImages[index]) {
+		return "";
+	}
+	return API.getImageUrl(recipe.stepImages[index]!);
 }
 
 function decreaseScale() {

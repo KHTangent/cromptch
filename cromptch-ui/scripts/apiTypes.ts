@@ -39,7 +39,7 @@ export interface CreateRecipeRequest {
 	imageId?: string;
 	ingredients: any[][];
 	steps: string[];
-	stepImages: Array<string | null>;
+	stepImages: Array<string | undefined>;
 }
 
 export interface CreateRecipeResponse {
