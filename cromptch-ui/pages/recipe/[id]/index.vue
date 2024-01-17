@@ -1,5 +1,12 @@
 <template>
 	<v-container>
+		<v-container v-if="getHeaderImageUrl().length > 0">
+			<v-img
+				cover
+				max-height="500"
+				:src="getHeaderImageUrl()"
+			></v-img>
+		</v-container>
 		<h1 class="text-h1 mb-4">{{ recipe.title }}</h1>
 		<p class="text-body-1">{{ recipe.description }}</p>
 		<p class="text-body-1">
@@ -89,6 +96,13 @@ function increaseScale() {
 	} else {
 		ingredientScaleFactor.value += 1;
 	}
+}
+
+function getHeaderImageUrl(): string {
+	if (!recipe.imageId) {
+		return "";
+	}
+	return API.getImageUrl(recipe.imageId);
 }
 
 function decreaseScale() {
