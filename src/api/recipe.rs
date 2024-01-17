@@ -111,6 +111,7 @@ struct GetRecipeResponse {
 	title: String,
 	description: String,
 	author: String,
+	image_id: Option<Uuid>,
 	author_id: Uuid,
 	ingredients: Vec<(f32, String, String)>,
 	steps: Vec<String>,
@@ -128,6 +129,7 @@ async fn get_recipe(
 		description: recipe.description,
 		author: author.username,
 		author_id: author.id,
+		image_id: recipe.image_id,
 		ingredients: recipe
 			.ingredients
 			.into_iter()
