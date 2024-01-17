@@ -35,6 +35,7 @@ pub struct Recipe {
 	pub name: String,
 	pub description: String,
 	pub author: Uuid,
+	pub image_id: Option<Uuid>,
 	pub ingredients: Vec<RecipeIngredient>,
 	pub steps: Vec<RecipeStep>,
 }
@@ -163,6 +164,7 @@ impl Recipe {
 			name: metadata.title,
 			description: metadata.description,
 			author: metadata.author,
+			image_id: metadata.image_id,
 			steps,
 			ingredients,
 		})
