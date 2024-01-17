@@ -115,6 +115,7 @@ struct GetRecipeResponse {
 	author_id: Uuid,
 	ingredients: Vec<(f32, String, String)>,
 	steps: Vec<String>,
+	step_images: Vec<Option<String>>,
 }
 
 async fn get_recipe(
@@ -123,6 +124,11 @@ async fn get_recipe(
 ) -> AppResult<Json<GetRecipeResponse>> {
 	let recipe = Recipe::from_uuid(&state.pool, &id).await?;
 	let author = User::from_uuid(&state.pool, &recipe.author).await?;
+	let step_images = recipe
+		.steps
+		.iter()
+		.map(|s| s.image_id.and_then(|i| Some(i.to_string())))
+		.collect();
 	Ok(Json(GetRecipeResponse {
 		id: recipe.id,
 		title: recipe.name,
@@ -136,6 +142,7 @@ async fn get_recipe(
 			.map(|i| (i.quantity.to_f32().unwrap_or(0.0), i.unit, i.name))
 			.collect(),
 		steps: recipe.steps.into_iter().map(|s| s.description).collect(),
+		step_images,
 	}))
 }
 
