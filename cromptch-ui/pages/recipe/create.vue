@@ -92,9 +92,9 @@
 			<h2 class="text-h2">Steps</h2>
 			<v-row class="mb-4">
 				<v-col cols="12">
-					<div v-for="(_, i) in steps" :key="i">
+					<div v-for="(step, i) in steps" :key="i">
 						<v-textarea
-							v-model="steps[i]"
+							v-model="step.step"
 							rows="1"
 							auto-grow
 							:label="'Step ' + (i + 1)"
@@ -102,6 +102,16 @@
 							required
 							class="ma-3"
 						>
+							<template #prepend>
+								<v-btn @click="openStepImageUploadDialog(i)" icon>
+									<v-icon>{{ icons.mdiCamera }}</v-icon>
+								</v-btn>
+								<ImageUploadDialog
+									:title="`Step ${i + 1} image`"
+									v-model:open="step.uploaderDialogOpen"
+									v-model:uploadedUuid="step.image"
+								/>
+							</template>
 							<template #append>
 								<v-btn @click="removeStep(i)" icon>
 									<v-icon>{{ icons.mdiClose }}</v-icon>
@@ -131,9 +141,9 @@
 <script setup lang="ts">
 import * as API from "@/scripts/api";
 import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
-import { mdiClose, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiPlus, mdiCamera } from "@mdi/js";
 
-const icons = { mdiClose, mdiPlus };
+const icons = { mdiClose, mdiPlus, mdiCamera };
 const unitSuggestions = [
 	"g",
 	"kg",
@@ -144,7 +154,16 @@ const unitSuggestions = [
 	"cup",
 	"pinch",
 	"piece",
+	"pack",
+	"bag",
+	"box",
 ];
+
+interface RecipeStepMetadata {
+	step: string;
+	image: string;
+	uploaderDialogOpen: boolean;
+}
 
 const error = ref("");
 const recipeCreationForm = ref<any>(null);
@@ -152,7 +171,11 @@ const uploading = ref(false);
 
 const title = ref("");
 const description = ref("");
-const steps = ref<string[]>([""]);
+const steps = ref<RecipeStepMetadata[]>([{
+	step: "",
+	image: "",
+	uploaderDialogOpen: false,
+}]);
 const selectedMainImage = ref("");
 const mainImageDialogOpen = ref(false);
 const ingredients = ref<any[][]>([[0, "", ""]]);
@@ -171,13 +194,25 @@ function removeIngredient(index: number) {
 }
 
 function addStep(after: number) {
-	steps.value.splice(after + 1, 0, "");
+	steps.value.splice(after + 1, 0, {
+		step: "",
+		image: "",
+		uploaderDialogOpen: false,
+	});
+}
+
+function openStepImageUploadDialog(index: number) {
+	steps.value[index].uploaderDialogOpen = true;
 }
 
 function removeStep(index: number) {
 	steps.value.splice(index, 1);
 	if (steps.value.length === 0) {
-		steps.value.push("");
+		steps.value.push({
+			step: "",
+			image: "",
+			uploaderDialogOpen: false,
+		});
 	}
 }
 
@@ -195,8 +230,8 @@ async function submitAndRedirect() {
 		description: description.value,
 		ingredients: ingredients.value.map((e) => [parseFloat(e[0]), e[1], e[2]]),
 		imageId: selectedMainImage.value.length > 0 ? selectedMainImage.value : undefined,
-		steps: steps.value,
-		stepImages: stepImages,
+		steps: steps.value.map(s => s.step),
+		stepImages: steps.value.map(s => s.image.length == 0 ? undefined : s.image),
 	};
 	let response: CreateRecipeResponse;
 	try {
