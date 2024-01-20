@@ -1,10 +1,13 @@
 <template>
 	<v-app-bar class="pr-4">
-		<v-app-bar-nav-icon>
-			<v-icon>
-				{{ navIcon }}
-			</v-icon>
-		</v-app-bar-nav-icon>
+		<NuxtLink to="/" class="mx-2 my-n1">
+			<v-avatar>
+				<v-img
+					src="/icon/pizza256.png"
+					alt="Cromptch icon"
+				></v-img>
+			</v-avatar>
+		</NuxtLink>
 		<v-tabs>
 			<v-tab to="/"> Home </v-tab>
 			<v-tab to="/about"> About </v-tab>
