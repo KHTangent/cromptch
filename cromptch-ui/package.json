@@ -11,7 +11,7 @@
 	"devDependencies": {
 		"@nuxt/devtools": "latest",
 		"@types/node": "^18.17.1",
-		"nuxt": "^3.9.0",
+		"nuxt": "^3.9.3",
 		"prettier": "3.0.0",
 		"vite-plugin-vuetify": "^1.0.2",
 		"vuetify": "^3.3.10"
