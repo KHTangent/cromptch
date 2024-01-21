@@ -19,7 +19,7 @@ pub async fn get_image_bytes(pictrs_url: &str, id: &Uuid) -> AppResult<axum::bod
 
 pub async fn get_thumbnail_bytes(pictrs_url: &str, id: &Uuid) -> AppResult<axum::body::Bytes> {
 	let thumbnail_url = format!(
-		"{}/image/process.webp?thumbnail=200&src={}.webp",
+		"{}/image/process.webp?thumbnail=512&src={}.webp",
 		pictrs_url, id
 	);
 	info!("Fetching image from {}", thumbnail_url);
