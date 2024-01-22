@@ -6,7 +6,8 @@
 			</span>
 			<v-btn
 				variant="text"
-				to="https://github.com/KHTangent/cromptch"
+				target="_blank"
+				href="https://github.com/KHTangent/cromptch"
 			>
 				Source Code
 			</v-btn>
