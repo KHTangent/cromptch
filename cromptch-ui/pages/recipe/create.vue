@@ -148,6 +148,7 @@ const unitSuggestions = [
 	"g",
 	"kg",
 	"ml",
+	"dl",
 	"l",
 	"tsp",
 	"tbsp",
@@ -157,6 +158,7 @@ const unitSuggestions = [
 	"pack",
 	"bag",
 	"box",
+	"can",
 ];
 
 interface RecipeStepMetadata {
