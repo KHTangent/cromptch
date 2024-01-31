@@ -45,19 +45,19 @@
 					</v-list-item>
 					<v-list-item>
 						<v-row align="center">
-							<v-col cols="6">
+							<v-col cols="4">
 								<strong>Scale: </strong>
 							</v-col>
-							<v-col cols="2">
-								<v-btn icon color="blue-darken-4" @click="decreaseScale">
+							<v-col cols="3">
+								<v-btn icon variant="text" @click="decreaseScale">
 									<v-icon>{{ icons.mdiMinus }}</v-icon>
 								</v-btn>
 							</v-col>
 							<v-col cols="2">
 								{{ ingredientScaleFactor }}
 							</v-col>
-							<v-col cols="2">
-								<v-btn icon color="blue-darken-2" @click="increaseScale">
+							<v-col cols="3">
+								<v-btn icon variant="text" @click="increaseScale">
 									<v-icon>{{ icons.mdiPlus }}</v-icon>
 								</v-btn>
 							</v-col>
