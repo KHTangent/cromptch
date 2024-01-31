@@ -1,10 +1,21 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
 	devtools: { enabled: true },
-	modules: ["./modules/vuetify.ts"],
+	modules: ["vuetify-nuxt-module"],
 	runtimeConfig: {
 		public: {
 			hcaptchaSiteKey: "",
+		}
+	},
+	vuetify: {
+		vuetifyOptions: {
+			theme: {
+				defaultTheme: "dark",
+			},
+			icons: {
+				defaultSet: "mdi-svg"
+			},
 		}
 	}
 });
