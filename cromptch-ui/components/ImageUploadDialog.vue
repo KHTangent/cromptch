@@ -10,6 +10,7 @@
 			<v-container>
 				<v-file-input
 					show-size
+					:disabled="isUploading"
 					:label="fileInputLabel"
 					v-model="selectedFile"
 					:accept="acceptTypes"
@@ -19,7 +20,8 @@
 			</v-container>
 			<v-card-actions>
 				<v-btn plain @click="close">Cancel</v-btn>
-				<v-btn color="error" @click="upload">Upload</v-btn>
+				<v-btn v-if="!isUploading" color="error" @click="upload">Upload</v-btn>
+				<v-btn v-else color="error" disabled>Uploading...</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
@@ -54,6 +56,7 @@ const props = defineProps({
 const selectedFile = ref<File[]>([]);
 const selectionError = ref<string>("");
 const userToken = useToken();
+const isUploading = ref(false);
 
 function close() {
 	modalOpen.value = false;
@@ -74,6 +77,7 @@ async function upload() {
 		return;
 	}
 
+	isUploading.value = true;
 	let uploaded: ApiTypes.ImageUploadResponse;
 	try {
 		uploaded = await Api.uploadImage(file, userToken.value);
@@ -83,10 +87,12 @@ async function upload() {
 		} else {
 			selectionError.value = "Unknown error while uploading file";
 		}
+		isUploading.value = false;
 		return;
 	}
 
 	uploadedUuid.value = uploaded.id;
 	modalOpen.value = false;
+	isUploading.value = false;
 }
 </script>
