@@ -1,5 +1,5 @@
 {
-	"name": "nuxt-app",
+	"name": "cromptch-ui",
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
