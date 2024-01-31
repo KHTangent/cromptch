@@ -67,13 +67,20 @@
 			</v-col>
 			<v-col cols="12" md="6" lg="8">
 				<h2 class="text-h2">Steps</h2>
-				<div v-for="(step, i) in recipe.steps">
-					<p class="text-body-1 ma-3" :key="i">
-						<strong>Step {{ i + 1 }}:</strong>
-						{{ step }}
-					</p>
-					<v-img v-if="recipe.stepImages[i]" :src="getStepImageUrl(i)" max-height="500"></v-img>
-				</div>
+				<v-list class="my-2">
+					<v-list-item v-for="(step, i) in recipe.steps">
+						<p class="text-body-1 ma-3" :key="i">
+							<strong>Step {{ i + 1 }}:</strong>
+							{{ step }}
+						</p>
+						<v-img
+							v-if="recipe.stepImages[i]"
+							:src="getStepImageUrl(i)"
+							max-height="500"
+							class="mb-4 mt-n2"
+						></v-img>
+					</v-list-item>
+					</v-list>
 			</v-col>
 		</v-row>
 	</v-container>
