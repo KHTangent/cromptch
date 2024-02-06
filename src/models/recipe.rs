@@ -40,6 +40,15 @@ pub struct Recipe {
 	pub steps: Vec<RecipeStep>,
 }
 
+#[allow(dead_code)]
+#[derive(Clone, Copy)]
+pub enum RecipeListSort {
+	DateAscending = 1,
+	DateDescending = 2,
+	NameAscending = 3,
+	NameDescending = 4,
+}
+
 impl Recipe {
 	pub async fn create(
 		pool: &PgPool,
@@ -170,13 +179,25 @@ impl Recipe {
 		})
 	}
 
-	pub async fn list_brief(pool: &PgPool) -> AppResult<Vec<RecipeMetadata>> {
+	pub async fn list_brief(
+		pool: &PgPool,
+		max_count: u64,
+		ordering: RecipeListSort,
+	) -> AppResult<Vec<RecipeMetadata>> {
 		let recipes = sqlx::query_as!(
 			RecipeMetadata,
 			r#"
 			SELECT id, title, description, author, image_id
 			FROM recipes
+			ORDER BY
+				CASE WHEN $2 = 1 THEN created_at END ASC,
+				CASE WHEN $2 = 2 THEN created_at END DESC,
+				CASE WHEN $2 = 3 THEN title END ASC,
+				CASE WHEN $2 = 4 THEN title END DESC
+			LIMIT $1
 			"#,
+			max_count as i64,
+			ordering as i64,
 		)
 		.fetch_all(pool)
 		.await

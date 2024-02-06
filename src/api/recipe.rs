@@ -13,7 +13,7 @@ use uuid::Uuid;
 use crate::{
 	error::{AppError, AppResult},
 	models::{
-		recipe::{Recipe, RecipeMetadata},
+		recipe::{Recipe, RecipeListSort, RecipeMetadata},
 		user::User,
 	},
 	AppState,
@@ -150,10 +150,20 @@ async fn list_recipes(
 	State(state): State<Arc<AppState>>,
 	Query(params): Query<HashMap<String, String>>,
 ) -> AppResult<Json<Vec<RecipeMetadata>>> {
-	let recipes = Recipe::list_brief(&state.pool).await?;
 	let limit = params
 		.get("limit")
-		.map(|s| s.parse::<usize>().unwrap_or(10))
+		.map(|s| s.parse::<u64>().unwrap_or(10))
 		.unwrap_or(10);
-	Ok(Json(recipes.into_iter().take(limit).collect()))
+	let sort_order = params
+		.get("order")
+		.map(|s| match s.as_str() {
+			"a-z" => RecipeListSort::NameAscending,
+			"z-a" => RecipeListSort::NameDescending,
+			"newest" => RecipeListSort::DateDescending,
+			"oldest" => RecipeListSort::DateAscending,
+			_ => RecipeListSort::DateAscending,
+		})
+		.unwrap_or(RecipeListSort::DateAscending);
+	let recipes = Recipe::list_brief(&state.pool, limit, sort_order).await?;
+	Ok(Json(recipes))
 }
