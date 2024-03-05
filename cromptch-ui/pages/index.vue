@@ -1,6 +1,22 @@
 <template>
 	<v-container>
 		<h1 class="text-h1 mb-4">Cromptch: Share recipes</h1>
+		<v-container class="d-flex flex-direction-row justify-end">
+			<v-btn-toggle v-model="selectedSortMode">
+				<v-btn icon>
+					<v-icon>{{ icons.mdiSortAlphabeticalAscending }}</v-icon>
+				</v-btn>
+				<v-btn icon>
+					<v-icon>{{ icons.mdiSortAlphabeticalDescending }}</v-icon>
+				</v-btn>
+				<v-btn icon>
+					<v-icon>{{ icons.mdiSortCalendarAscending }}</v-icon>
+				</v-btn>
+				<v-btn icon>
+					<v-icon>{{ icons.mdiSortCalendarDescending }}</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+		</v-container>
 		<v-row v-if="recipes.length > 0">
 			<v-col v-for="recipe in recipes" :key="recipe.id" cols="12" md="6" lg="4">
 				<RecipeCard :recipe="recipe" />
@@ -11,8 +27,34 @@
 <script setup lang="ts">
 import * as API from "@/scripts/api";
 import * as APITypes from "@/scripts/apiTypes";
-let recipes: APITypes.RecipeMetadata[] = [];
+import { mdiSortAlphabeticalAscending, mdiSortAlphabeticalDescending, mdiSortCalendarAscending, mdiSortCalendarDescending } from "@mdi/js";
+
+const icons = {
+	mdiSortAlphabeticalAscending,
+	mdiSortAlphabeticalDescending,
+	mdiSortCalendarAscending,
+	mdiSortCalendarDescending,
+};
+const sortOrders = [
+	APITypes.RecipeListSortTypes.NameAscending,
+	APITypes.RecipeListSortTypes.NameDescending,
+	APITypes.RecipeListSortTypes.DateAscending,
+	APITypes.RecipeListSortTypes.DateDescending,
+];
+
+let selectedSortMode = ref(0);
+
+let recipes: Ref<APITypes.RecipeMetadata[]> = ref([]);
+
+watch(selectedSortMode, async (newValue, oldValue) => {
+	if (newValue == oldValue) return;
+	try {
+		const newRecipes = await API.getRecipeList(sortOrders[newValue]);
+		recipes.value = newRecipes;
+	} catch (e: any) {}
+});
+
 try {
-	recipes = await API.getRecipeList();
+	recipes.value = await API.getRecipeList(APITypes.RecipeListSortTypes.DateDescending);
 } catch (e: any) {}
 </script>

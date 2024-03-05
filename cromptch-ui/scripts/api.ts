@@ -57,10 +57,11 @@ export async function getSelfUser(
 }
 
 export async function getRecipeList(
+	sortBy: ApiTypes.RecipeListSortTypes,
 	limit: number = 10,
 ): Promise<ApiTypes.RecipeMetadata[]> {
 	let r = await $fetch<ApiTypes.RecipeMetadata[]>(
-		`${API_URL}/recipe/list?limit=${limit}`,
+		`${API_URL}/recipe/list?limit=${limit}&order=${sortBy}`,
 		{
 			method: "GET",
 			headers: {

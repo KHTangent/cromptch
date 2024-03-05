@@ -49,3 +49,10 @@ export interface CreateRecipeResponse {
 export interface ImageUploadResponse {
 	id: string;
 }
+
+export enum RecipeListSortTypes {
+	NameAscending = "a-z",
+	NameDescending = "z-a",
+	DateDescending = "newest",
+	DateAscending = "oldest",
+}
