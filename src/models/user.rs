@@ -136,6 +136,19 @@ impl User {
 		.map_err(|_| AppError::internal("Failed to issue token"))?;
 		Ok(token)
 	}
+
+	pub async fn get_all(pool: &PgPool) -> AppResult<Vec<User>> {
+		sqlx::query_as!(
+			User,
+			r#"
+			SELECT id, username, email, password, is_admin
+			FROM users
+			"#
+		)
+		.fetch_all(pool)
+		.await
+		.map_err(|_| AppError::internal("Failed to get users"))
+	}
 }
 
 #[async_trait]

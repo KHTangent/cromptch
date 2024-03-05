@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n\t\t\tSELECT id, title, description, author, image_id\n\t\t\tFROM recipes\n\t\t\t",
+  "query": "\n\t\t\tSELECT id, username, email, password, is_admin\n\t\t\tFROM users\n\t\t\t",
   "describe": {
     "columns": [
       {
@@ -10,23 +10,23 @@
       },
       {
         "ordinal": 1,
-        "name": "title",
+        "name": "username",
         "type_info": "Text"
       },
       {
         "ordinal": 2,
-        "name": "description",
+        "name": "email",
         "type_info": "Text"
       },
       {
         "ordinal": 3,
-        "name": "author",
-        "type_info": "Uuid"
+        "name": "password",
+        "type_info": "Text"
       },
       {
         "ordinal": 4,
-        "name": "image_id",
-        "type_info": "Uuid"
+        "name": "is_admin",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
@@ -37,8 +37,8 @@
       false,
       false,
       false,
-      true
+      false
     ]
   },
-  "hash": "20ee37261bc0c0570b1f3b3247c1d8aa46b4eb2c672e9193c615c18f2d59c103"
+  "hash": "d22d69131efe6e1ea3429006f6853551efde239c2931fa6e79eb5f2bb59f4b70"
 }
