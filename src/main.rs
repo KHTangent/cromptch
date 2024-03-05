@@ -68,6 +68,7 @@ async fn main() {
 		.merge(api::user::user_router(app_state.clone()))
 		.merge(api::recipe::recipe_router(app_state.clone()))
 		.merge(api::image::image_router(app_state.clone()))
+		.merge(api::admin::admin_router(app_state.clone()))
 		.layer(
 			CorsLayer::new()
 				.allow_origin([
