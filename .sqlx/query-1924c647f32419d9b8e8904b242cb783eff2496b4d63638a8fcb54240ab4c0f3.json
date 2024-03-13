@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tDELETE FROM recipes\n\t\t\tWHERE id = $1\n\t\t\t",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1924c647f32419d9b8e8904b242cb783eff2496b4d63638a8fcb54240ab4c0f3"
+}

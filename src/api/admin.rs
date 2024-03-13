@@ -1,17 +1,24 @@
 use std::sync::Arc;
 
-use axum::{extract::State, routing::get, Json, Router};
+use axum::{
+	extract::{Path, State},
+	routing::{delete, get},
+	Json, Router,
+};
 use serde::Serialize;
+use tracing::info;
+use uuid::Uuid;
 
 use crate::{
 	error::AppResult,
-	models::{admin::Admin, user::User},
+	models::{admin::Admin, recipe::Recipe, user::User},
 	AppState,
 };
 
 pub fn admin_router(state: Arc<AppState>) -> Router {
 	Router::new()
 		.route("/api/admin/users", get(get_users))
+		.route("/api/admin/recipe/:id", delete(delete_recipe))
 		.with_state(state)
 }
 
@@ -40,4 +47,15 @@ async fn get_users(
 			})
 			.collect(),
 	))
+}
+
+async fn delete_recipe(
+	State(state): State<Arc<AppState>>,
+	admin: Admin,
+	Path(id): Path<Uuid>,
+) -> AppResult<()> {
+	let recipe = Recipe::from_uuid(&state.pool, &id).await?;
+	info!("User {} deleted recipe {}", admin.user.id, recipe.id);
+	recipe.delete(&state.pool).await?;
+	Ok(())
 }
