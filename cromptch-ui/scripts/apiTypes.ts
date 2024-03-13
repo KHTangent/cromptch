@@ -6,7 +6,7 @@ export interface LoginResponse {
 	token: string;
 }
 
-export interface GetSelfResponse {
+export interface UserView {
 	id: string;
 	username: string;
 	email: string;

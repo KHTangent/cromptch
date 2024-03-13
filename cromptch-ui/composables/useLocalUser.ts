@@ -1,8 +1,8 @@
 import * as Api from "@/scripts/api";
-import { SelfUser } from "@/scripts/localTypes";
+import { UserView } from "@/scripts/localTypes";
 
 export const useLocalUser = () =>
-	useAsyncData<SelfUser | null>(
+	useAsyncData<UserView | null>(
 		"user",
 		async () => {
 			let token = useToken();

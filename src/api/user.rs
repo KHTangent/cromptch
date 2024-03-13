@@ -122,6 +122,7 @@ async fn login_user(
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserSelfResponse {
 	pub id: String,
 	pub username: String,
