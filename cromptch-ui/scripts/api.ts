@@ -1,6 +1,6 @@
 import * as ApiTypes from "@/scripts/apiTypes";
 
-const API_URL = "http://127.0.0.1:3001/api";
+export const API_URL = "http://127.0.0.1:3001/api";
 
 export function register(
 	username: string,
@@ -45,8 +45,8 @@ export async function login(
 
 export async function getSelfUser(
 	token: string,
-): Promise<ApiTypes.GetSelfResponse> {
-	let r = await $fetch<ApiTypes.GetSelfResponse>(API_URL + "/user/self", {
+): Promise<ApiTypes.UserView> {
+	let r = await $fetch<ApiTypes.UserView>(API_URL + "/user/self", {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",

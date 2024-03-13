@@ -16,6 +16,7 @@ pub fn admin_router(state: Arc<AppState>) -> Router {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserViewResponseEntry {
 	pub id: String,
 	pub username: String,

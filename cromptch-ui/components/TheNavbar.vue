@@ -11,6 +11,7 @@
 		<v-tabs>
 			<v-tab to="/"> Home </v-tab>
 			<v-tab v-if="loggedIn" to="/recipe/create"> Create recipe </v-tab>
+			<v-tab v-if="isAdmin" to="/admin"> Admin </v-tab>
 		</v-tabs>
 		<v-spacer></v-spacer>
 
@@ -31,4 +32,5 @@ const navIcon = mdiGlobeModel;
 
 const profile = await useLocalUser();
 const loggedIn = computed(() => !!profile.data.value);
+const isAdmin = computed(() => profile.data.value && profile.data.value.isAdmin);
 </script>
