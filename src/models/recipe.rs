@@ -204,4 +204,18 @@ impl Recipe {
 		.map_err(|_| AppError::internal("Error fetching recipes"))?;
 		Ok(recipes)
 	}
+
+	pub async fn delete(&self, pool: &PgPool) -> AppResult<()> {
+		sqlx::query!(
+			r#"
+			DELETE FROM recipes
+			WHERE id = $1
+			"#,
+			self.id
+		)
+		.execute(pool)
+		.await
+		.map_err(|_| AppError::internal("Deletion failed"))?;
+		Ok(())
+	}
 }
