@@ -8,9 +8,18 @@
 		<v-divider class="my-8"></v-divider>
 
 		<h2 class="text-h2 my-4">Recipes</h2>
+		<ConfirmationDialog
+			:title="!deleteRecipeConfirmationOpen ? '' : `Delete recipe ${recipeList[selectedRecipe].id}?`"
+			v-model="deleteRecipeConfirmationOpen"
+			@confirm="deleteRecipe(recipeList[selectedRecipe].id)"
+		>
+			<p class="text-body-1">
+				This action can not be undone.
+			</p>
+		</ConfirmationDialog>
 		<v-data-table :items="recipeList">
-			<template v-slot:item.actions="{ item }">
-				<v-btn icon @click="deleteItem(item.id)">
+			<template v-slot:item.actions="{ index }">
+				<v-btn icon @click="selectedRecipe = index; deleteRecipeConfirmationOpen = true">
 					<v-icon>
 						{{ icons.mdiTrashCan }}
 					</v-icon>
@@ -30,16 +39,23 @@ const icons = { mdiTrashCan };
 const token = useToken();
 
 const userList = ref(await AdminAPI.getAllUsers(token.value));
-var recipeList = ref((await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map((r: any) => {
-	r["actions"] = "";
-	return r;
-}));
 
-async function deleteItem(id: string) {
+interface RecipeMetadataWithActions extends ApiTypes.RecipeMetadata {
+	actions: string;
+}
+
+function extendRecipe(recipe: ApiTypes.RecipeMetadata) {
+	const r = recipe as RecipeMetadataWithActions;
+	r.actions = "";
+	return r;
+}
+const recipeList = ref((await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe));
+const selectedRecipe = ref(-1);
+const deleteRecipeConfirmationOpen = ref(false);
+
+async function deleteRecipe(id: string) {
 	await AdminAPI.deleteRecipe(token.value, id);
-	recipeList.value = (await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map((r: any) => {
-		r["actions"] = "";
-		return r;
-	});
+	recipeList.value = (await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe);
+	deleteRecipeConfirmationOpen.value = false;
 }
 </script>
