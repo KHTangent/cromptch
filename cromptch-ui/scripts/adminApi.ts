@@ -13,3 +13,16 @@ export async function getAllUsers(
 	});
 	return r;
 }
+
+export async function deleteRecipe(
+	token: string,
+	id: string,
+): Promise<void> {
+	await $fetch(API_URL + `/admin/recipe/${id}`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	});
+}
