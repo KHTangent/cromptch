@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h1 class="text-h1 mb-4">Cromptch Admin</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Cromptch Admin</h1>
 
 		<h2 class="text-h2 my-4">Users</h2>
 		<v-data-table :items="userList"></v-data-table>
@@ -37,6 +37,7 @@ import { mdiTrashCan } from "@mdi/js";
 const icons = { mdiTrashCan };
 
 const token = useToken();
+const isMobile = useDisplay().mobile;
 
 const userList = ref(await AdminAPI.getAllUsers(token.value));
 

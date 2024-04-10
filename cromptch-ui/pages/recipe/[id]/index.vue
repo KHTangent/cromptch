@@ -7,7 +7,7 @@
 				:src="getHeaderImageUrl()"
 			></v-img>
 		</v-container>
-		<h1 class="text-h1 mb-4">{{ recipe.title }}</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">{{ recipe.title }}</h1>
 		<p class="text-body-1">{{ recipe.description }}</p>
 		<p class="text-body-1">
 			Uploaded by <strong>{{ recipe.author }}</strong>
@@ -95,6 +95,7 @@ const icons = {
 };
 
 const route = useRoute();
+const isMobile = useDisplay().mobile;
 const recipe = await API.getRecipe(route.params.id as string);
 const ingredientScaleFactor = ref(1);
 

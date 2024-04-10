@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h1 class="text-h1 mb-4">Log in</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Log in</h1>
 		<v-alert type="error" v-if="error.length > 0" dismissible class="ma-2">
 			{{ error }}
 		</v-alert>
@@ -19,6 +19,8 @@
 <script lang="ts" setup>
 import * as Api from "@/scripts/api";
 import * as ApiTypes from "@/scripts/apiTypes";
+
+const isMobile = useDisplay().mobile;
 
 const email = ref("");
 const password = ref("");

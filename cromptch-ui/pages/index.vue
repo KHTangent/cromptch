@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h1 class="text-h1 mb-4">Cromptch: Share recipes</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Cromptch: Share recipes</h1>
 		<v-container class="d-flex flex-direction-row justify-end">
 			<v-btn-toggle v-model="selectedSortMode">
 				<v-btn icon>
@@ -41,6 +41,8 @@ const sortOrders = [
 	APITypes.RecipeListSortTypes.DateAscending,
 	APITypes.RecipeListSortTypes.DateDescending,
 ];
+
+const isMobile = useDisplay().mobile;
 
 let selectedSortMode = ref(0);
 

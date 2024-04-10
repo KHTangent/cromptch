@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h1 class="text-h1 mb-4">Sign up</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Sign up</h1>
 		<v-alert type="error" v-if="error.length > 0" dismissible class="ma-2">
 			{{ error }}
 		</v-alert>
@@ -39,6 +39,8 @@ import VueHcaptcha from "@hcaptcha/vue3-hcaptcha";
 
 const appConfig = useRuntimeConfig();
 
+const isMobile = useDisplay().mobile;
+
 const hcaptchaSiteKey = computed(
 	() => appConfig.public.hcaptchaSiteKey as string,
 );
@@ -53,7 +55,7 @@ const hcaptchaToken = ref("");
 const error = ref("");
 const registrationSuccess = ref(false);
 
-function onHCVerify(token: string, e: any) {
+function onHCVerify(token: string, _: any) {
 	hcaptchaToken.value = token;
 }
 

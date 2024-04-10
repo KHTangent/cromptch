@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h1 class="text-h1">Create recipe</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Create recipe</h1>
 		<p class="text-body-1">
 			A recipe must have at least one step and one ingredient.
 		</p>
@@ -160,6 +160,8 @@ const unitSuggestions = [
 	"box",
 	"can",
 ];
+
+const isMobile = useDisplay().mobile;
 
 interface RecipeStepMetadata {
 	step: string;
