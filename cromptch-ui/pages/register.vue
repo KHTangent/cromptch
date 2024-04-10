@@ -36,6 +36,7 @@
 <script lang="ts" setup>
 import * as Api from "@/scripts/api";
 import VueHcaptcha from "@hcaptcha/vue3-hcaptcha";
+import { FetchError } from "ofetch";
 
 const appConfig = useRuntimeConfig();
 
@@ -89,8 +90,10 @@ async function register() {
 		);
 		error.value = "";
 		registrationSuccess.value = true;
-	} catch (e: any) {
-		error.value = e.data;
+	} catch (e: unknown) {
+		if (e instanceof FetchError) {
+			error.value = e.data;
+		}
 	}
 }
 </script>

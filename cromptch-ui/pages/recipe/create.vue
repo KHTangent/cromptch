@@ -142,6 +142,7 @@
 import * as API from "@/scripts/api";
 import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
 import { mdiClose, mdiPlus, mdiCamera } from "@mdi/js";
+import { FetchError } from "ofetch";
 
 const icons = { mdiClose, mdiPlus, mdiCamera };
 const unitSuggestions = [
@@ -241,8 +242,8 @@ async function submitAndRedirect() {
 	try {
 		response = await API.createRecipe(recipe, userToken.value);
 	} catch (e: unknown) {
-		if (e instanceof Response) {
-			error.value = await e.text();
+		if (e instanceof FetchError) {
+			error.value = await e.data;
 		}
 		uploading.value = false;
 		return;

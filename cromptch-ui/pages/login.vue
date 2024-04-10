@@ -19,6 +19,7 @@
 <script lang="ts" setup>
 import * as Api from "@/scripts/api";
 import * as ApiTypes from "@/scripts/apiTypes";
+import { FetchError } from "ofetch";
 
 const isMobile = useDisplay().mobile;
 
@@ -35,8 +36,8 @@ async function login() {
 	try {
 		user = await Api.login(email.value, password.value);
 	} catch (e: unknown) {
-		if (e instanceof Response) {
-			error.value = await e.text();
+		if (e instanceof FetchError) {
+			error.value = e.data;
 		}
 		return;
 	}
