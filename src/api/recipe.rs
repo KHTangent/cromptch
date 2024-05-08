@@ -1,13 +1,12 @@
-use std::{collections::HashMap, str::FromStr, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
 	extract::{Path, Query, State},
 	routing::{get, post},
 	Json, Router,
 };
-use bigdecimal::ToPrimitive;
-use chrono::{naive::serde::ts_seconds, NaiveDateTime};
-use serde::{Deserialize, Serialize};
+use bigdecimal::FromPrimitive;
+use serde::Serialize;
 use sqlx::types::BigDecimal;
 use tracing::info;
 use uuid::Uuid;
@@ -15,9 +14,7 @@ use uuid::Uuid;
 use crate::{
 	error::{AppError, AppResult},
 	models::{
-		recipe::{
-			Recipe, RecipeCreation, RecipeIngredient, RecipeListSort, RecipeMetadata, RecipeStep,
-		},
+		recipe::{Recipe, RecipeCreation, RecipeListSort, RecipeMetadata},
 		user::User,
 	},
 	AppState,
@@ -31,17 +28,6 @@ pub fn recipe_router(state: Arc<AppState>) -> Router {
 		.with_state(state)
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct CreateRecipeRequest {
-	title: String,
-	description: String,
-	ingredients: Vec<(f32, String, String)>,
-	image_id: Option<Uuid>,
-	steps: Vec<String>,
-	step_images: Vec<Option<Uuid>>,
-}
-
 #[derive(Debug, Serialize)]
 struct CreateRecipeResponse {
 	id: Uuid,
@@ -50,101 +36,52 @@ struct CreateRecipeResponse {
 async fn create_recipe(
 	State(state): State<Arc<AppState>>,
 	user: User,
-	Json(CreateRecipeRequest {
-		title,
-		description,
-		ingredients,
-		image_id,
-		steps,
-		step_images,
-	}): Json<CreateRecipeRequest>,
+	Json(recipe): Json<RecipeCreation>,
 ) -> AppResult<Json<CreateRecipeResponse>> {
-	if title.is_empty() {
+	if recipe.name.is_empty() {
 		return Err(AppError::bad_request("Title cannot be empty"));
 	}
-	if ingredients.len() == 0 {
+	if recipe.ingredients.len() == 0 {
 		return Err(AppError::bad_request(
 			"Recipe must have at least one ingredient",
 		));
 	}
-	if steps.len() != step_images.len() {
-		return Err(AppError::bad_request(
-			"Number of steps must match number of step images",
-		));
-	}
-	if steps.len() == 0 {
+	if recipe.steps.len() == 0 {
 		return Err(AppError::bad_request("Recipe must have at least one step"));
 	}
-	for step in &steps {
-		if step.is_empty() {
+	for step in &recipe.steps {
+		if step.description.is_empty() {
 			return Err(AppError::bad_request("Steps cannot be empty"));
 		}
 	}
-	for (quantity, unit, name) in &ingredients {
-		if name.is_empty() {
+	for ingredient in &recipe.ingredients {
+		if ingredient.name.is_empty() {
 			return Err(AppError::bad_request("Ingredient name cannot be empty"));
 		}
-		if unit.is_empty() {
+		if ingredient.unit.is_empty() {
 			return Err(AppError::bad_request("Ingredient unit cannot be empty"));
 		}
-		if quantity < &0.0 {
+		if ingredient.quantity.le(&BigDecimal::from_f32(0.0).unwrap()) {
 			return Err(AppError::bad_request(
 				"Ingredient quantity cannot be negative",
 			));
 		}
 	}
-	let recipe = Recipe::create(
-		&state.pool,
-		&RecipeCreation {
-			name: title,
-			description,
-			author: user.id,
-			image_id,
-			time_estimate_active: None,
-			time_estimate_total: None,
-			source_url: None,
-			ingredients: ingredients
-				.into_iter()
-				.map(|(quantity, unit, name)| RecipeIngredient {
-					name,
-					unit,
-					quantity: BigDecimal::from_str(format!("{:.2}", quantity).as_str()).unwrap(),
-				})
-				.collect(),
-			steps: steps
-				.into_iter()
-				.zip(step_images.into_iter())
-				.map(|(s, i)| RecipeStep {
-					description: s,
-					image_id: i,
-				})
-				.collect(),
-		},
-	)
-	.await?;
-	info!("User {} created recipe {}", user.id, recipe.id);
-	Ok(Json(CreateRecipeResponse { id: recipe.id }))
+	let created_recipe = Recipe::create(&state.pool, &user.id, &recipe).await?;
+	info!(
+		"User {} created recipe {}",
+		user.id, created_recipe.metadata.id
+	);
+	Ok(Json(CreateRecipeResponse {
+		id: created_recipe.metadata.id,
+	}))
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct GetRecipeResponse {
-	id: Uuid,
-	title: String,
-	description: String,
+	recipe: Recipe,
 	author: String,
-	image_id: Option<Uuid>,
-	author_id: Uuid,
-	time_estimate_active: Option<BigDecimal>,
-	time_estimate_total: Option<BigDecimal>,
-	source_url: Option<String>,
-	ingredients: Vec<(f32, String, String)>,
-	steps: Vec<String>,
-	step_images: Vec<Option<String>>,
-	#[serde(with = "ts_seconds")]
-	created_at: NaiveDateTime,
-	#[serde(with = "ts_seconds")]
-	edited_at: NaiveDateTime,
 }
 
 async fn get_recipe(
@@ -152,31 +89,10 @@ async fn get_recipe(
 	Path(id): Path<Uuid>,
 ) -> AppResult<Json<GetRecipeResponse>> {
 	let recipe = Recipe::from_uuid(&state.pool, &id).await?;
-	let author = User::from_uuid(&state.pool, &recipe.author).await?;
-	let step_images = recipe
-		.steps
-		.iter()
-		.map(|s| s.image_id.and_then(|i| Some(i.to_string())))
-		.collect();
+	let author = User::from_uuid(&state.pool, &recipe.metadata.author).await?;
 	Ok(Json(GetRecipeResponse {
-		id: recipe.id,
-		title: recipe.name,
-		description: recipe.description,
 		author: author.username,
-		author_id: author.id,
-		image_id: recipe.image_id,
-		source_url: recipe.source_url,
-		edited_at: recipe.edited_at,
-		created_at: recipe.created_at,
-		ingredients: recipe
-			.ingredients
-			.into_iter()
-			.map(|i| (i.quantity.to_f32().unwrap_or(0.0), i.unit, i.name))
-			.collect(),
-		steps: recipe.steps.into_iter().map(|s| s.description).collect(),
-		step_images,
-		time_estimate_active: recipe.time_estimate_active,
-		time_estimate_total: recipe.time_estimate_total,
+		recipe,
 	}))
 }
 

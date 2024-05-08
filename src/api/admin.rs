@@ -55,7 +55,10 @@ async fn delete_recipe(
 	Path(id): Path<Uuid>,
 ) -> AppResult<()> {
 	let recipe = Recipe::from_uuid(&state.pool, &id).await?;
-	info!("User {} deleted recipe {}", admin.user.id, recipe.id);
+	info!(
+		"User {} deleted recipe {}",
+		admin.user.id, recipe.metadata.id
+	);
 	recipe.delete(&state.pool).await?;
 	Ok(())
 }
