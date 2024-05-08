@@ -1,5 +1,5 @@
 use chrono::naive::serde::ts_seconds;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::{
 	types::{chrono::NaiveDateTime, BigDecimal},
 	PgPool,
@@ -25,40 +25,34 @@ pub struct RecipeMetadata {
 	pub edited_at: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RecipeIngredient {
 	pub quantity: BigDecimal,
 	pub unit: String,
 	pub name: String,
 }
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RecipeStep {
 	pub description: String,
 	pub image_id: Option<Uuid>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Recipe {
-	pub id: Uuid,
-	pub name: String,
-	pub description: String,
-	pub author: Uuid,
-	pub image_id: Option<Uuid>,
-	pub time_estimate_active: Option<BigDecimal>,
-	pub time_estimate_total: Option<BigDecimal>,
-	pub created_at: NaiveDateTime,
-	pub edited_at: NaiveDateTime,
-	pub source_url: Option<String>,
+	pub metadata: RecipeMetadata,
 	pub ingredients: Vec<RecipeIngredient>,
 	pub steps: Vec<RecipeStep>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RecipeCreation {
 	pub name: String,
 	pub description: String,
-	pub author: Uuid,
 	pub image_id: Option<Uuid>,
 	pub time_estimate_active: Option<BigDecimal>,
 	pub time_estimate_total: Option<BigDecimal>,
@@ -76,7 +70,7 @@ pub enum RecipeListSort {
 }
 
 impl Recipe {
-	pub async fn create(pool: &PgPool, data: &RecipeCreation) -> AppResult<Recipe> {
+	pub async fn create(pool: &PgPool, author: &Uuid, data: &RecipeCreation) -> AppResult<Recipe> {
 		let mut tx = pool
 			.begin()
 			.await
@@ -91,7 +85,7 @@ impl Recipe {
 			id,
 			data.name,
 			data.description,
-			data.author,
+			author,
 			data.image_id,
             data.source_url,
 			data.time_estimate_active,
@@ -184,18 +178,9 @@ impl Recipe {
 		.map_err(|_| AppError::not_found("Recipe not found"))?;
 
 		Ok(Recipe {
-			id: metadata.id,
-			name: metadata.title,
-			description: metadata.description,
-			author: metadata.author,
-			image_id: metadata.image_id,
+			metadata,
 			steps,
 			ingredients,
-			time_estimate_active: metadata.time_estimate_active,
-			time_estimate_total: metadata.time_estimate_total,
-			source_url: metadata.source_url,
-			created_at: metadata.created_at,
-			edited_at: metadata.edited_at,
 		})
 	}
 
@@ -231,7 +216,7 @@ impl Recipe {
 			DELETE FROM recipes
 			WHERE id = $1
 			"#,
-			self.id
+			self.metadata.id
 		)
 		.execute(pool)
 		.await
