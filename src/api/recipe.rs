@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, str::FromStr, sync::Arc};
 
 use axum::{
 	extract::{Path, Query, State},
@@ -6,14 +6,18 @@ use axum::{
 	Json, Router,
 };
 use bigdecimal::ToPrimitive;
+use chrono::{naive::serde::ts_seconds, NaiveDateTime};
 use serde::{Deserialize, Serialize};
+use sqlx::types::BigDecimal;
 use tracing::info;
 use uuid::Uuid;
 
 use crate::{
 	error::{AppError, AppResult},
 	models::{
-		recipe::{Recipe, RecipeListSort, RecipeMetadata},
+		recipe::{
+			Recipe, RecipeCreation, RecipeIngredient, RecipeListSort, RecipeMetadata, RecipeStep,
+		},
 		user::User,
 	},
 	AppState,
@@ -91,13 +95,31 @@ async fn create_recipe(
 	}
 	let recipe = Recipe::create(
 		&state.pool,
-		&title,
-		&description,
-		&user.id,
-		&ingredients,
-		image_id,
-		&steps,
-		&step_images,
+		&RecipeCreation {
+			name: title,
+			description,
+			author: user.id,
+			image_id,
+			time_estimate_active: None,
+			time_estimate_total: None,
+			source_url: None,
+			ingredients: ingredients
+				.into_iter()
+				.map(|(quantity, unit, name)| RecipeIngredient {
+					name,
+					unit,
+					quantity: BigDecimal::from_str(format!("{:.2}", quantity).as_str()).unwrap(),
+				})
+				.collect(),
+			steps: steps
+				.into_iter()
+				.zip(step_images.into_iter())
+				.map(|(s, i)| RecipeStep {
+					description: s,
+					image_id: i,
+				})
+				.collect(),
+		},
 	)
 	.await?;
 	info!("User {} created recipe {}", user.id, recipe.id);
@@ -113,9 +135,16 @@ struct GetRecipeResponse {
 	author: String,
 	image_id: Option<Uuid>,
 	author_id: Uuid,
+	time_estimate_active: Option<BigDecimal>,
+	time_estimate_total: Option<BigDecimal>,
+	source_url: Option<String>,
 	ingredients: Vec<(f32, String, String)>,
 	steps: Vec<String>,
 	step_images: Vec<Option<String>>,
+	#[serde(with = "ts_seconds")]
+	created_at: NaiveDateTime,
+	#[serde(with = "ts_seconds")]
+	edited_at: NaiveDateTime,
 }
 
 async fn get_recipe(
@@ -136,6 +165,9 @@ async fn get_recipe(
 		author: author.username,
 		author_id: author.id,
 		image_id: recipe.image_id,
+		source_url: recipe.source_url,
+		edited_at: recipe.edited_at,
+		created_at: recipe.created_at,
 		ingredients: recipe
 			.ingredients
 			.into_iter()
@@ -143,6 +175,8 @@ async fn get_recipe(
 			.collect(),
 		steps: recipe.steps.into_iter().map(|s| s.description).collect(),
 		step_images,
+		time_estimate_active: recipe.time_estimate_active,
+		time_estimate_total: recipe.time_estimate_total,
 	}))
 }
 
