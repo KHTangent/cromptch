@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tSELECT id, title, description, author, image_id, time_estimate_active, time_estimate_total, source_url, created_at, edited_at\n\t\t\tFROM recipes\n\t\t\tWHERE id = $1\n\t\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "author",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "image_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "time_estimate_active",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "time_estimate_total",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "source_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 9,
+        "name": "edited_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "d0dcd6b9e021aee0b8594ee319229440fa4b88fcda618beaa4dbf4e58f3bfb9d"
+}
