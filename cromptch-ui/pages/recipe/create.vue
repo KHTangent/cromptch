@@ -26,6 +26,8 @@
 				label="Description"
 				class="ma-3"
 			></v-textarea>
+			<v-divider class="my-2"></v-divider>
+			<h2 class="text-h2 my-4">Optional info</h2>
 			<v-btn
 				block
 				@click="mainImageDialogOpen = true"
@@ -37,6 +39,40 @@
 				v-model:open="mainImageDialogOpen"
 				v-model:uploadedUuid="selectedMainImage"
 			/>
+			<v-row class="mt-2">
+				<v-col md="6" cols="12">
+					<v-text-field
+						v-model="estimatedActiveTime"
+						type="number"
+						label="Estimated time spent preparing (hours)"
+						required
+						:rules="[
+							(v) => (v.length == 0 || v > 0) || 'Amount must be empty greater than 0',
+						]"
+					></v-text-field>
+				</v-col>
+				<v-col md="6" cols="12">
+					<v-text-field
+						v-model="estimatedTotalTime"
+						type="number"
+						label="Estimated time to done, including waiting (hours)"
+						required
+						:rules="[
+							(v) => (v.length == 0 || v > 0) || 'Amount must be empty or greater than 0',
+						]"
+					></v-text-field>
+				</v-col>
+				<v-col cols="12">
+					<v-text-field
+						v-model="sourceUrl"
+						label="Recipe source URL"
+						required
+						:rules="[
+							(v) => (v.length == 0 || v.startsWith('http://') || v.startsWith('https://')) || 'Must be empty or a valid URL',
+						]"
+					></v-text-field>
+				</v-col>
+			</v-row>
 			<v-divider class="my-2"></v-divider>
 			<h2 class="text-h2 my-4">Ingredients</h2>
 			<v-row>
@@ -176,6 +212,9 @@ const uploading = ref(false);
 
 const title = ref("");
 const description = ref("");
+const estimatedActiveTime = ref("");
+const estimatedTotalTime = ref("");
+const sourceUrl = ref("");
 const steps = ref<RecipeStepMetadata[]>([{
 	step: "",
 	image: "",
@@ -231,6 +270,9 @@ async function submitAndRedirect() {
 	const recipe: CreateRecipeRequest = {
 		name: title.value,
 		description: description.value,
+		timeEstimateTotal: estimatedTotalTime.value.length > 0 ? parseFloat(estimatedTotalTime.value) : undefined,
+		timeEstimateActive: estimatedActiveTime.value.length > 0 ? parseFloat(estimatedActiveTime.value) : undefined,
+		sourceUrl: sourceUrl.value.length > 0 ? sourceUrl.value : undefined,
 		imageId: selectedMainImage.value.length > 0 ? selectedMainImage.value : undefined,
 		ingredients: ingredients.value.map((e) => {return {
 			quantity: parseFloat(e[0]),
