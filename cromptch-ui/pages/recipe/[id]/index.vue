@@ -12,6 +12,14 @@
 		<p class="text-body-1">
 			Uploaded by <strong>{{ author }}</strong>
 		</p>
+		<p class="text-body-1" v-if="recipe.metadata.timeEstimateActive || recipe.metadata.timeEstimateTotal">
+			<span v-if="recipe.metadata.timeEstimateActive">Estimated work time: {{ recipe.metadata.timeEstimateActive }}</span>
+			<br>
+			<span v-if="recipe.metadata.timeEstimateTotal">Estimated total time including waits: {{ recipe.metadata.timeEstimateTotal }}</span>
+		</p>
+		<p class="text-body-1">
+			Upload date: {{ (new Date(recipe.metadata.createdAt * 1000)).toDateString() }}
+		</p>
 		<v-divider class="my-2"></v-divider>
 		<v-row>
 			<v-col cols="12" md="6" lg="4">
@@ -80,7 +88,10 @@
 							class="mb-4 mt-n2"
 						></v-img>
 					</v-list-item>
-					</v-list>
+				</v-list>
+				<p class="text-body-1" v-if="recipe.metadata.sourceUrl">
+					Source: <a target="_blank" :href="recipe.metadata.sourceUrl">{{ recipe.metadata.sourceUrl }}</a>
+				</p>
 			</v-col>
 		</v-row>
 	</v-container>
