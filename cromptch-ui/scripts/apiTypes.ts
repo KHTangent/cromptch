@@ -17,33 +17,50 @@ export interface RecipeMetadata {
 	id: string;
 	title: string;
 	description: string;
-	imageId?: string;
 	author: string;
+	imageId?: string;
+	timeEstimateActive?: number;
+	timeEstimateTotal?: number;
+	sourceUrl?: string;
+	createdAt: number;
+	editedAt: number;
+}
+
+export interface RecipeIngredient {
+	quantity: number,
+	unit: string,
+	name: string,
+}
+
+export interface RecipeStep {
+	description: string,
+	imageId?: string;
 }
 
 export interface Recipe {
-	id: string;
-	title: string;
-	description: string;
-	author: string;
-	authorId: string;
-	ingredients: any[][];
-	imageId?: string;
-	steps: string[];
-	stepImages: Array<string | null>;
+	metadata: RecipeMetadata;
+	ingredients: Array<RecipeIngredient>;
+	steps: Array<RecipeStep>;
 }
 
 export interface CreateRecipeRequest {
-	title: string;
+	name: string;
 	description: string;
 	imageId?: string;
-	ingredients: any[][];
-	steps: string[];
-	stepImages: Array<string | undefined>;
+	timeEstimateActive?: number;
+	timeEstimateTotal?: number;
+	sourceUrl?: string;
+	ingredients: Array<RecipeIngredient>;
+	steps: Array<RecipeStep>;
 }
 
 export interface CreateRecipeResponse {
 	id: string;
+}
+
+export interface GetRecipeResponse {
+	recipe: Recipe;
+	author: string;
 }
 
 export interface ImageUploadResponse {
