@@ -227,16 +227,20 @@ async function submitAndRedirect() {
 		return;
 	}
 	uploading.value = true;
-	let stepImages = new Array<string | null>(steps.value.length);
-	stepImages.fill(null);
 
 	const recipe: CreateRecipeRequest = {
-		title: title.value,
+		name: title.value,
 		description: description.value,
-		ingredients: ingredients.value.map((e) => [parseFloat(e[0]), e[1], e[2]]),
 		imageId: selectedMainImage.value.length > 0 ? selectedMainImage.value : undefined,
-		steps: steps.value.map(s => s.step),
-		stepImages: steps.value.map(s => s.image.length == 0 ? undefined : s.image),
+		ingredients: ingredients.value.map((e) => {return {
+			quantity: parseFloat(e[0]),
+			unit: e[1],
+			name: e[2],
+		};}),
+		steps: steps.value.map(s => {return {
+			description: s.step,
+			imageId: s.image.length > 0 ? s.image : undefined,
+		};}),
 	};
 	let response: CreateRecipeResponse;
 	try {

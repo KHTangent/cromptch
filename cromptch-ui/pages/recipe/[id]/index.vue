@@ -7,10 +7,10 @@
 				:src="getHeaderImageUrl()"
 			></v-img>
 		</v-container>
-		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">{{ recipe.title }}</h1>
-		<p class="text-body-1">{{ recipe.description }}</p>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">{{ recipe.metadata.title }}</h1>
+		<p class="text-body-1">{{ recipe.metadata.description }}</p>
 		<p class="text-body-1">
-			Uploaded by <strong>{{ recipe.author }}</strong>
+			Uploaded by <strong>{{ author }}</strong>
 		</p>
 		<v-divider class="my-2"></v-divider>
 		<v-row>
@@ -33,13 +33,13 @@
 					<v-list-item v-for="(ingredient, i) in recipe.ingredients" :key="i">
 						<v-row>
 							<v-col cols="3">
-								{{ scaleIngredient(ingredient[0]) }}
+								{{ scaleIngredient(ingredient.quantity) }}
 							</v-col>
 							<v-col cols="2">
-								{{ ingredient[1] }}
+								{{ ingredient.unit }}
 							</v-col>
 							<v-col cols="7">
-								{{ ingredient[2] }}
+								{{ ingredient.name }}
 							</v-col>
 						</v-row>
 					</v-list-item>
@@ -71,11 +71,11 @@
 					<v-list-item v-for="(step, i) in recipe.steps">
 						<p class="text-body-1 ma-3" :key="i">
 							<strong>Step {{ i + 1 }}:</strong>
-							{{ step }}
+							{{ step.description }}
 						</p>
 						<v-img
-							v-if="recipe.stepImages[i]"
-							:src="getStepImageUrl(i)"
+							v-if="step.imageId"
+							:src="getStepImageUrl(step.imageId)"
 							max-height="500"
 							class="mb-4 mt-n2"
 						></v-img>
@@ -96,7 +96,7 @@ const icons = {
 
 const route = useRoute();
 const isMobile = useDisplay().mobile;
-const recipe = await API.getRecipe(route.params.id as string);
+const { recipe, author } = await API.getRecipe(route.params.id as string);
 const ingredientScaleFactor = ref(1);
 
 function increaseScale() {
@@ -110,17 +110,14 @@ function increaseScale() {
 }
 
 function getHeaderImageUrl(): string {
-	if (!recipe.imageId) {
+	if (!recipe.metadata.imageId) {
 		return "";
 	}
-	return API.getImageUrl(recipe.imageId);
+	return API.getImageUrl(recipe.metadata.imageId);
 }
 
-function getStepImageUrl(index: number): string {
-	if (!recipe.stepImages[index]) {
-		return "";
-	}
-	return API.getImageUrl(recipe.stepImages[index]!);
+function getStepImageUrl(id: string): string {
+	return API.getImageUrl(id);
 }
 
 function decreaseScale() {

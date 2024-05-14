@@ -72,8 +72,8 @@ export async function getRecipeList(
 	return r;
 }
 
-export async function getRecipe(id: string): Promise<ApiTypes.Recipe> {
-	let r = await $fetch<ApiTypes.Recipe>(`${API_URL}/recipe/${id}`, {
+export async function getRecipe(id: string): Promise<ApiTypes.GetRecipeResponse> {
+	let r = await $fetch<ApiTypes.GetRecipeResponse>(`${API_URL}/recipe/${id}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
