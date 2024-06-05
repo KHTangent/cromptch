@@ -1,297 +1,59 @@
 <template>
 	<v-container>
 		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Create recipe</h1>
+		<v-alert type="error" v-if="error.length > 0" dismissible class="ma-2">
+			{{ error }}
+		</v-alert>
 		<p class="text-body-1">
 			A recipe must have at least one step and one ingredient.
 		</p>
 		<v-divider class="my-2"></v-divider>
-		<v-alert type="error" v-if="error.length > 0" dismissible class="ma-2">
-			{{ error }}
-		</v-alert>
-		<v-form
-			ref="recipeCreationForm"
-			validate-on="submit"
-			@submit.prevent="submitAndRedirect"
-		>
-			<h2 class="text-h2">Metadata</h2>
-			<v-text-field
-				v-model="title"
-				label="Recipe name"
-				required
-				class="ma-3"
-				:rules="[(v) => !!v || 'Title is required']"
-			></v-text-field>
-			<v-textarea
-				v-model="description"
-				label="Description"
-				class="ma-3"
-			></v-textarea>
-			<v-divider class="my-2"></v-divider>
-			<h2 class="text-h2 my-4">Optional info</h2>
-			<v-btn
-				block
-				@click="mainImageDialogOpen = true"
-			>
-				Add image
-			</v-btn>
-			<ImageUploadDialog
-				title="Main image"
-				v-model:open="mainImageDialogOpen"
-				v-model:uploadedUuid="selectedMainImage"
-			/>
-			<v-row class="mt-2">
-				<v-col md="6" cols="12">
-					<v-text-field
-						v-model="estimatedActiveTime"
-						type="number"
-						label="Estimated time spent preparing (hours)"
-						required
-						:rules="[
-							(v) => (v.length == 0 || v > 0) || 'Amount must be empty greater than 0',
-						]"
-					></v-text-field>
-				</v-col>
-				<v-col md="6" cols="12">
-					<v-text-field
-						v-model="estimatedTotalTime"
-						type="number"
-						label="Estimated time to done, including waiting (hours)"
-						required
-						:rules="[
-							(v) => (v.length == 0 || v > 0) || 'Amount must be empty or greater than 0',
-						]"
-					></v-text-field>
-				</v-col>
-				<v-col cols="12">
-					<v-text-field
-						v-model="sourceUrl"
-						label="Recipe source URL"
-						required
-						:rules="[
-							(v) => (v.length == 0 || v.startsWith('http://') || v.startsWith('https://')) || 'Must be empty or a valid URL',
-						]"
-					></v-text-field>
-				</v-col>
-			</v-row>
-			<v-divider class="my-2"></v-divider>
-			<h2 class="text-h2 my-4">Ingredients</h2>
-			<v-row>
-				<v-col cols="12">
-					<v-list>
-						<v-list-item v-for="(_, i) in ingredients" :key="i">
-							<v-row>
-								<v-col cols="2">
-									<v-text-field
-										v-model="ingredients[i][0]"
-										type="number"
-										label="Quantity"
-										required
-										:rules="[
-											(v) => !!v || 'Quantity is required',
-											(v) => v > 0 || 'Quantity must be greater than 0',
-										]"
-									></v-text-field>
-								</v-col>
-								<v-col cols="2">
-									<v-autocomplete
-										v-model="ingredients[i][1]"
-										:items="unitSuggestions"
-										auto-select-first
-										label="Unit"
-										required
-										:rules="[(v) => !!v || 'Unit is required']"
-									></v-autocomplete>
-								</v-col>
-								<v-col cols="8">
-									<v-text-field
-										v-model="ingredients[i][2]"
-										label="Ingredient"
-										required
-										:rules="[(v) => !!v || 'Ingredient name is required']"
-									>
-										<template #append>
-											<v-btn @click="removeIngredient(i)" icon>
-												<v-icon>{{ icons.mdiClose }}</v-icon>
-											</v-btn>
-										</template>
-									</v-text-field>
-								</v-col>
-							</v-row>
-							<v-btn @click="addIngredient(i)" compact block>
-								<v-icon>{{ icons.mdiPlus }}</v-icon>
-							</v-btn>
-						</v-list-item>
-					</v-list>
-				</v-col>
-			</v-row>
-			<v-divider class="my-2"></v-divider>
-			<h2 class="text-h2">Steps</h2>
-			<v-row class="mb-4">
-				<v-col cols="12">
-					<div v-for="(step, i) in steps" :key="i">
-						<v-textarea
-							v-model="step.step"
-							rows="1"
-							auto-grow
-							:label="'Step ' + (i + 1)"
-							:rules="[(v) => !!v || 'Step is required']"
-							required
-							class="ma-3"
-						>
-							<template #prepend>
-								<v-btn @click="openStepImageUploadDialog(i)" icon>
-									<v-icon>{{ icons.mdiCamera }}</v-icon>
-								</v-btn>
-								<ImageUploadDialog
-									:title="`Step ${i + 1} image`"
-									v-model:open="step.uploaderDialogOpen"
-									v-model:uploadedUuid="step.image"
-								/>
-							</template>
-							<template #append>
-								<v-btn @click="removeStep(i)" icon>
-									<v-icon>{{ icons.mdiClose }}</v-icon>
-								</v-btn>
-							</template>
-						</v-textarea>
-						<v-btn @click="addStep(i)" compact block>
-							<v-icon>{{ icons.mdiPlus }}</v-icon>
-						</v-btn>
-					</div>
-				</v-col>
-			</v-row>
-			<v-divider class="my-2"></v-divider>
-			<h2 class="text-h2 mt-8 mb-4">Publish</h2>
-			<v-btn
-				type="submit"
-				block
-				size="large"
-				color="success"
-				class="ma-3"
-				:loading="uploading"
-				>Submit</v-btn
-			>
-		</v-form>
+		<RecipeEditor
+			v-model="recipe"
+			@submit="submitAndRedirect"
+		></RecipeEditor>
 	</v-container>
 </template>
 <script setup lang="ts">
 import * as API from "@/scripts/api";
 import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
-import { mdiClose, mdiPlus, mdiCamera } from "@mdi/js";
 import { FetchError } from "ofetch";
 
-const icons = { mdiClose, mdiPlus, mdiCamera };
-const unitSuggestions = [
-	"g",
-	"kg",
-	"ml",
-	"dl",
-	"l",
-	"tsp",
-	"tbsp",
-	"cup",
-	"pinch",
-	"piece",
-	"pack",
-	"bag",
-	"box",
-	"can",
-];
-
-const isMobile = useDisplay().mobile;
-
-interface RecipeStepMetadata {
-	step: string;
-	image: string;
-	uploaderDialogOpen: boolean;
-}
-
+const recipe = ref<CreateRecipeRequest>({
+	description: "",
+	name: "",
+	ingredients: [{
+		quantity: 0.0,
+		unit: "",
+		name: "",
+	}],
+	steps: [{
+		description: "",
+		imageId: "",
+	}],
+});
 const error = ref("");
-const recipeCreationForm = ref<any>(null);
-const uploading = ref(false);
-
-const title = ref("");
-const description = ref("");
-const estimatedActiveTime = ref("");
-const estimatedTotalTime = ref("");
-const sourceUrl = ref("");
-const steps = ref<RecipeStepMetadata[]>([{
-	step: "",
-	image: "",
-	uploaderDialogOpen: false,
-}]);
-const selectedMainImage = ref("");
-const mainImageDialogOpen = ref(false);
-const ingredients = ref<any[][]>([[0, "", ""]]);
 
 const userToken = useToken();
+const isMobile = useDisplay().mobile;
 
-function addIngredient(after: number) {
-	ingredients.value.splice(after + 1, 0, [0, "", ""]);
-}
-
-function removeIngredient(index: number) {
-	ingredients.value.splice(index, 1);
-	if (ingredients.value.length === 0) {
-		ingredients.value.push([0, "", ""]);
-	}
-}
-
-function addStep(after: number) {
-	steps.value.splice(after + 1, 0, {
-		step: "",
-		image: "",
-		uploaderDialogOpen: false,
-	});
-}
-
-function openStepImageUploadDialog(index: number) {
-	steps.value[index].uploaderDialogOpen = true;
-}
-
-function removeStep(index: number) {
-	steps.value.splice(index, 1);
-	if (steps.value.length === 0) {
-		steps.value.push({
-			step: "",
-			image: "",
-			uploaderDialogOpen: false,
-		});
-	}
-}
 
 async function submitAndRedirect() {
-	const { valid } = await recipeCreationForm.value.validate();
-	if (!valid) {
-		return;
+	if (recipe.value.imageId?.length == 0) {
+		recipe.value.imageId = undefined;
 	}
-	uploading.value = true;
-
-	const recipe: CreateRecipeRequest = {
-		name: title.value,
-		description: description.value,
-		timeEstimateTotal: estimatedTotalTime.value.length > 0 ? parseFloat(estimatedTotalTime.value) : undefined,
-		timeEstimateActive: estimatedActiveTime.value.length > 0 ? parseFloat(estimatedActiveTime.value) : undefined,
-		sourceUrl: sourceUrl.value.length > 0 ? sourceUrl.value : undefined,
-		imageId: selectedMainImage.value.length > 0 ? selectedMainImage.value : undefined,
-		ingredients: ingredients.value.map((e) => {return {
-			quantity: parseFloat(e[0]),
-			unit: e[1],
-			name: e[2],
-		};}),
-		steps: steps.value.map(s => {return {
-			description: s.step,
-			imageId: s.image.length > 0 ? s.image : undefined,
-		};}),
-	};
+	for (let step of recipe.value.steps) {
+		if (step.imageId?.length == 0) {
+			step.imageId = undefined;
+		}
+	}
 	let response: CreateRecipeResponse;
 	try {
-		response = await API.createRecipe(recipe, userToken.value);
+		response = await API.createRecipe(recipe.value, userToken.value);
 	} catch (e: unknown) {
 		if (e instanceof FetchError) {
 			error.value = await e.data;
 		}
-		uploading.value = false;
 		return;
 	}
 	navigateTo(`/recipe/${response.id}`);
