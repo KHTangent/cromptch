@@ -29,9 +29,7 @@
 	</v-container>
 </template>
 <script setup lang="ts">
-import * as API from "@/scripts/api";
 import * as ApiTypes from "@/scripts/apiTypes";
-import * as AdminAPI from "@/scripts/adminApi";
 import { mdiTrashCan } from "@mdi/js";
 
 const icons = { mdiTrashCan };
@@ -39,7 +37,7 @@ const icons = { mdiTrashCan };
 const token = useToken();
 const isMobile = useDisplay().mobile;
 
-const userList = ref(await AdminAPI.getAllUsers(token.value));
+const userList = ref(await useBackend().admin.getAllUsers(token.value));
 
 interface RecipeMetadataWithActions extends ApiTypes.RecipeMetadata {
 	actions: string;
@@ -50,13 +48,13 @@ function extendRecipe(recipe: ApiTypes.RecipeMetadata) {
 	r.actions = "";
 	return r;
 }
-const recipeList = ref((await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe));
+const recipeList = ref((await useBackend().getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe));
 const selectedRecipe = ref(-1);
 const deleteRecipeConfirmationOpen = ref(false);
 
 async function deleteRecipe(id: string) {
-	await AdminAPI.deleteRecipe(token.value, id);
-	recipeList.value = (await API.getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe);
+	await useBackend().admin.deleteRecipe(token.value, id);
+	recipeList.value = (await useBackend().getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe);
 	deleteRecipeConfirmationOpen.value = false;
 }
 </script>

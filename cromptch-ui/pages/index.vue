@@ -25,7 +25,6 @@
 	</v-container>
 </template>
 <script setup lang="ts">
-import * as API from "@/scripts/api";
 import * as APITypes from "@/scripts/apiTypes";
 import { mdiSortAlphabeticalAscending, mdiSortAlphabeticalDescending, mdiSortCalendarAscending, mdiSortCalendarDescending } from "@mdi/js";
 
@@ -51,12 +50,12 @@ let recipes: Ref<APITypes.RecipeMetadata[]> = ref([]);
 watch(selectedSortMode, async (newValue, oldValue) => {
 	if (newValue == oldValue) return;
 	try {
-		const newRecipes = await API.getRecipeList(sortOrders[newValue]);
+		const newRecipes = await useBackend().getRecipeList(sortOrders[newValue]);
 		recipes.value = newRecipes;
 	} catch (e: any) {}
 });
 
 try {
-	recipes.value = await API.getRecipeList(APITypes.RecipeListSortTypes.DateDescending);
+	recipes.value = await useBackend().getRecipeList(APITypes.RecipeListSortTypes.DateDescending);
 } catch (e: any) {}
 </script>

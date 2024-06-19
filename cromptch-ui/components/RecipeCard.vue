@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import { type PropType } from "vue";
-import * as Api from "@/scripts/api";
 import * as APITypes from "@/scripts/apiTypes";
+import { useBackend } from "~/composables/useBackend";
 
 const isMobile = useDisplay().mobile;
 
@@ -36,7 +36,7 @@ const props = defineProps({
 
 function imageSrc() {
 	if (props.recipe.imageId) {
-		return Api.getImageThumbnailUrl(props.recipe.imageId!);
+		return useBackend().getImageThumbnailUrl(props.recipe.imageId!);
 	}
 	return "";
 }

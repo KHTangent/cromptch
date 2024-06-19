@@ -17,7 +17,6 @@
 	</v-container>
 </template>
 <script lang="ts" setup>
-import * as Api from "@/scripts/api";
 import * as ApiTypes from "@/scripts/apiTypes";
 import { FetchError } from "ofetch";
 
@@ -34,7 +33,7 @@ async function login() {
 	}
 	let user: ApiTypes.LoginResponse;
 	try {
-		user = await Api.login(email.value, password.value);
+		user = await useBackend().login(email.value, password.value);
 	} catch (e: unknown) {
 		if (e instanceof FetchError) {
 			error.value = e.data;

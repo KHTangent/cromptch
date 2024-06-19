@@ -1,120 +1,131 @@
 import * as ApiTypes from "@/scripts/apiTypes";
+import { AdminApi } from "./adminApi";
 
-export const API_URL = "http://127.0.0.1:3001/api";
+export const API_URL = "";
 
-export function register(
-	username: string,
-	email: string,
-	password: string,
-	hcaptchaToken?: string,
-) {
-	let body: Record<string, string> = { username, email, password };
-	if (hcaptchaToken) {
-		body["hcaptchaToken"] = hcaptchaToken;
+export class Api {
+	protected apiUrl: string;
+	admin: AdminApi;
+
+	constructor(apiUrl: string) {
+		this.apiUrl = apiUrl;
+		this.admin = new AdminApi(apiUrl);
 	}
-	return $fetch(API_URL + "/user/create", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(body),
-	});
-}
 
-export function getImageUrl(id: string): string {
-	return `${API_URL}/image/${id}`;
-}
+	register(
+		username: string,
+		email: string,
+		password: string,
+		hcaptchaToken?: string,
+	) {
+		let body: Record<string, string> = { username, email, password };
+		if (hcaptchaToken) {
+			body["hcaptchaToken"] = hcaptchaToken;
+		}
+		return $fetch(this.apiUrl + "/user/create", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		});
+	}
 
-export function getImageThumbnailUrl(id: string): string {
-	return `${API_URL}/image/thumbnail/${id}`;
-}
+	getImageUrl(id: string): string {
+		return `${this.apiUrl}/image/${id}`;
+	}
 
-export async function login(
-	email: string,
-	password: string,
-): Promise<ApiTypes.LoginResponse> {
-	let r = await $fetch<ApiTypes.LoginResponse>(API_URL + "/user/login", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email, password }),
-	});
-	return r;
-}
+	getImageThumbnailUrl(id: string): string {
+		return `${this.apiUrl}/image/thumbnail/${id}`;
+	}
 
-export async function getSelfUser(
-	token: string,
-): Promise<ApiTypes.UserView> {
-	let r = await $fetch<ApiTypes.UserView>(API_URL + "/user/self", {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-	});
-	return r;
-}
+	async login(
+		email: string,
+		password: string,
+	): Promise<ApiTypes.LoginResponse> {
+		let r = await $fetch<ApiTypes.LoginResponse>(this.apiUrl + "/user/login", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email, password }),
+		});
+		return r;
+	}
 
-export async function getRecipeList(
-	sortBy: ApiTypes.RecipeListSortTypes,
-	limit: number = 10,
-): Promise<ApiTypes.RecipeMetadata[]> {
-	let r = await $fetch<ApiTypes.RecipeMetadata[]>(
-		`${API_URL}/recipe/list?limit=${limit}&order=${sortBy}`,
-		{
+	async getSelfUser(
+		token: string,
+	): Promise<ApiTypes.UserView> {
+		let r = await $fetch<ApiTypes.UserView>(this.apiUrl + "/user/self", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		return r;
+	}
+
+	async getRecipeList(
+		sortBy: ApiTypes.RecipeListSortTypes,
+		limit: number = 10,
+	): Promise<ApiTypes.RecipeMetadata[]> {
+		let r = await $fetch<ApiTypes.RecipeMetadata[]>(
+			`${this.apiUrl}/recipe/list?limit=${limit}&order=${sortBy}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return r;
+	}
+
+	async getRecipe(id: string): Promise<ApiTypes.GetRecipeResponse> {
+		let r = await $fetch<ApiTypes.GetRecipeResponse>(`${this.apiUrl}/recipe/${id}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
 			},
-		},
-	);
-	return r;
-}
+		});
+		return r;
+	}
 
-export async function getRecipe(id: string): Promise<ApiTypes.GetRecipeResponse> {
-	let r = await $fetch<ApiTypes.GetRecipeResponse>(`${API_URL}/recipe/${id}`, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
-	return r;
-}
-
-export async function createRecipe(
-	body: ApiTypes.CreateRecipeRequest,
-	token: string,
-): Promise<ApiTypes.CreateRecipeResponse> {
-	let r = await $fetch<ApiTypes.CreateRecipeResponse>(
-		`${API_URL}/recipe/create`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
+	async createRecipe(
+		body: ApiTypes.CreateRecipeRequest,
+		token: string,
+	): Promise<ApiTypes.CreateRecipeResponse> {
+		let r = await $fetch<ApiTypes.CreateRecipeResponse>(
+			`${this.apiUrl}/recipe/create`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body,
 			},
-			body,
-		},
-	);
-	return r;
-}
+		);
+		return r;
+	}
 
-export async function uploadImage(
-	imageFile: Blob,
-	token: string,
-): Promise<ApiTypes.ImageUploadResponse> {
-	let body = new FormData();
-	body.set("file", imageFile);
-	let r = await $fetch<ApiTypes.ImageUploadResponse>(
-		`${API_URL}/image`,
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${token}`,
+	async uploadImage(
+		imageFile: Blob,
+		token: string,
+	): Promise<ApiTypes.ImageUploadResponse> {
+		let body = new FormData();
+		body.set("file", imageFile);
+		let r = await $fetch<ApiTypes.ImageUploadResponse>(
+			`${this.apiUrl}/image`,
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				body,
 			},
-			body,
-		},
-	);
-	return r;
+		);
+		return r;
+	}
 }

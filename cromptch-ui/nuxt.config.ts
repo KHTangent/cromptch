@@ -6,6 +6,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			hcaptchaSiteKey: "",
+			apiUrl: "",
 		}
 	},
 	vuetify: {

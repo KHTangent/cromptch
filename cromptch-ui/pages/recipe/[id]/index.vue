@@ -97,7 +97,6 @@
 	</v-container>
 </template>
 <script setup lang="ts">
-import * as API from "@/scripts/api";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 
 const icons = {
@@ -107,7 +106,7 @@ const icons = {
 
 const route = useRoute();
 const isMobile = useDisplay().mobile;
-const { recipe, author } = await API.getRecipe(route.params.id as string);
+const { recipe, author } = await useBackend().getRecipe(route.params.id as string);
 const ingredientScaleFactor = ref(1);
 
 function increaseScale() {
@@ -124,11 +123,11 @@ function getHeaderImageUrl(): string {
 	if (!recipe.metadata.imageId) {
 		return "";
 	}
-	return API.getImageUrl(recipe.metadata.imageId);
+	return useBackend().getImageUrl(recipe.metadata.imageId);
 }
 
 function getStepImageUrl(id: string): string {
-	return API.getImageUrl(id);
+	return useBackend().getImageUrl(id);
 }
 
 function decreaseScale() {

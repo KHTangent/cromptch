@@ -34,7 +34,6 @@
 	</v-container>
 </template>
 <script lang="ts" setup>
-import * as Api from "@/scripts/api";
 import VueHcaptcha from "@hcaptcha/vue3-hcaptcha";
 import { FetchError } from "ofetch";
 
@@ -82,7 +81,7 @@ async function register() {
 		return;
 	}
 	try {
-		await Api.register(
+		await useBackend().register(
 			username.value,
 			email.value,
 			password.value,

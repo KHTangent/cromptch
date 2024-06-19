@@ -1,15 +1,14 @@
-import * as Api from "@/scripts/api";
-import { UserView } from "@/scripts/localTypes";
+import type { SelfUser } from "@/scripts/localTypes";
 
 export const useLocalUser = () =>
-	useAsyncData<UserView | null>(
+	useAsyncData<SelfUser | null>(
 		"user",
 		async () => {
 			let token = useToken();
 			if (token) {
 				let user;
 				try {
-					user = await Api.getSelfUser(token.value);
+					user = await useBackend().getSelfUser(token.value);
 				} catch (e: unknown) {
 					return null;
 				}

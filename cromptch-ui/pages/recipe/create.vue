@@ -15,7 +15,6 @@
 	</v-container>
 </template>
 <script setup lang="ts">
-import * as API from "@/scripts/api";
 import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
 import { FetchError } from "ofetch";
 
@@ -49,7 +48,7 @@ async function submitAndRedirect() {
 	}
 	let response: CreateRecipeResponse;
 	try {
-		response = await API.createRecipe(recipe.value, userToken.value);
+		response = await useBackend().createRecipe(recipe.value, userToken.value);
 	} catch (e: unknown) {
 		if (e instanceof FetchError) {
 			error.value = await e.data;

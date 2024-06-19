@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import * as Api from "@/scripts/api";
 import * as ApiTypes from "@/scripts/apiTypes";
 import { FetchError } from "ofetch";
 
@@ -80,7 +79,7 @@ async function upload() {
 	isUploading.value = true;
 	let uploaded: ApiTypes.ImageUploadResponse;
 	try {
-		uploaded = await Api.uploadImage(file, userToken.value);
+		uploaded = await useBackend().uploadImage(file, userToken.value);
 	} catch (e) {
 		if (e instanceof FetchError) {
 			selectionError.value = e.data;
