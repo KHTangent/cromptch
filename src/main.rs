@@ -46,6 +46,7 @@ async fn main() {
 	if secrets.pictrs_url.is_empty() {
 		info!("PICTRS_URL not set, image features will be disabled");
 	}
+	let frontend_url = env::var("FRONTEND_URL").unwrap_or("http://localhost:3000".to_string());
 
 	info!("Connecting to database...");
 	let pool = PgPool::connect(&env::var("POSTGRES_URL").expect("DATABASE_URL not set"))
@@ -71,10 +72,7 @@ async fn main() {
 		.merge(api::admin::admin_router(app_state.clone()))
 		.layer(
 			CorsLayer::new()
-				.allow_origin([
-					"http://localhost:3000".parse::<HeaderValue>().unwrap(),
-					"https://cromptch.derg.vip".parse::<HeaderValue>().unwrap(),
-				])
+				.allow_origin([frontend_url.parse::<HeaderValue>().unwrap()])
 				.allow_headers([http::header::AUTHORIZATION, http::header::CONTENT_TYPE])
 				.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE]),
 		)
