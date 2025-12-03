@@ -5,8 +5,15 @@
 			{{ error }}
 		</v-alert>
 		<v-form @submit.prevent="login" class="ma-2">
-			<v-text-field label="Email" v-model="email" required></v-text-field>
 			<v-text-field
+				autocomplete="email"
+				type="email"
+				label="Email"
+				v-model="email"
+				required
+			></v-text-field>
+			<v-text-field
+				autocomplete="current-password"
 				label="Password"
 				type="password"
 				v-model="password"

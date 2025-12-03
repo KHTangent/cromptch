@@ -9,15 +9,27 @@
 			<nuxt-link to="/login">log in</nuxt-link>.
 		</v-alert>
 		<v-form @submit.prevent="register" class="ma-2">
-			<v-text-field label="Username" v-model="username" required></v-text-field>
-			<v-text-field label="Email" v-model="email" required></v-text-field>
 			<v-text-field
+				autocomplete="username"
+				label="Username"
+				v-model="username"
+				required
+			></v-text-field>
+			<v-text-field
+				autocomplete="username"
+				label="Email"
+				v-model="email"
+				required
+			></v-text-field>
+			<v-text-field
+				autocomplete="new-password"
 				label="Password"
 				type="password"
 				v-model="password"
 				required
 			></v-text-field>
 			<v-text-field
+				autocomplete="new-password"
 				label="Confirm Password"
 				type="password"
 				v-model="confirmPassword"
