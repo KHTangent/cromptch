@@ -41,12 +41,12 @@ async fn create_recipe(
 	if recipe.name.is_empty() {
 		return Err(AppError::bad_request("Title cannot be empty"));
 	}
-	if recipe.ingredients.len() == 0 {
+	if recipe.ingredients.is_empty() {
 		return Err(AppError::bad_request(
 			"Recipe must have at least one ingredient",
 		));
 	}
-	if recipe.steps.len() == 0 {
+	if recipe.steps.is_empty() {
 		return Err(AppError::bad_request("Recipe must have at least one step"));
 	}
 	for step in &recipe.steps {

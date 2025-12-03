@@ -25,7 +25,7 @@ where
 	async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
 		let user = User::from_request_parts(parts, state).await?;
 		user.is_admin
-			.then(|| Admin { user })
+			.then_some(Admin { user })
 			.ok_or_else(|| AppError::unauthorized("user is not an admin"))
 	}
 }

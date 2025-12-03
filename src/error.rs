@@ -37,9 +37,9 @@ impl fmt::Display for AppError {
 	}
 }
 
-impl Into<StatusCode> for AppErrorKind {
-	fn into(self) -> StatusCode {
-		match self {
+impl From<AppErrorKind> for StatusCode {
+	fn from(val: AppErrorKind) -> Self {
+		match val {
 			AppErrorKind::BadRequest => StatusCode::BAD_REQUEST,
 			AppErrorKind::Unauthorized => StatusCode::UNAUTHORIZED,
 			AppErrorKind::Forbidden => StatusCode::FORBIDDEN,

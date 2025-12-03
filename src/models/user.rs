@@ -122,7 +122,7 @@ impl User {
 		// 48 bytes = 64 characters in base64
 		let mut random_bytes: [u8; 48] = [0; 48];
 		rand::thread_rng().fill_bytes(&mut random_bytes);
-		let token = URL_SAFE_NO_PAD.encode(&random_bytes);
+		let token = URL_SAFE_NO_PAD.encode(random_bytes);
 		sqlx::query!(
 			r#"
 			INSERT INTO user_tokens (token, user_id)

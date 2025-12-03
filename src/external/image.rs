@@ -34,6 +34,7 @@ pub async fn get_thumbnail_bytes(pictrs_url: &str, id: &Uuid) -> AppResult<axum:
 }
 
 #[derive(serde::Deserialize)]
+#[allow(dead_code)]
 pub struct ImageUploadDetails {
 	pub content_type: String,
 	pub created_at: String,
@@ -46,6 +47,7 @@ pub struct ImageUploadDetails {
 #[derive(serde::Deserialize)]
 pub struct ImageUploadFile {
 	pub delete_token: String,
+	#[allow(dead_code)]
 	pub details: ImageUploadDetails,
 	pub file: String,
 }
@@ -66,7 +68,7 @@ pub async fn upload_image(
 	let form = reqwest::multipart::Form::new().part("images[]", file_part);
 	info!("Uploading image {}", filename);
 	let response = reqwest::Client::new()
-		.post(&format!("{}/image", pictrs_url))
+		.post(format!("{}/image", pictrs_url))
 		.multipart(form)
 		.send()
 		.await

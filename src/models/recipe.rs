@@ -132,7 +132,7 @@ impl Recipe {
 			.await
 			.map_err(|_| AppError::internal("Internal db error"))?;
 
-		Ok(Recipe::from_uuid(pool, &id).await?)
+		Recipe::from_uuid(pool, &id).await
 	}
 
 	pub async fn from_uuid(pool: &PgPool, id: &Uuid) -> AppResult<Recipe> {
