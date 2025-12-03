@@ -2,10 +2,7 @@
 	<v-app-bar>
 		<NuxtLink to="/" class="mx-2 my-n1">
 			<v-avatar>
-				<v-img
-					src="/icon/pizza256.png"
-					alt="Cromptch icon"
-				></v-img>
+				<v-img src="/icon/pizza256.png" alt="Cromptch icon"></v-img>
 			</v-avatar>
 		</NuxtLink>
 		<v-tabs v-if="!isMobile">
@@ -25,24 +22,18 @@
 				<v-btn variant="text" to="/register"> Register </v-btn>
 			</span>
 		</span>
-		<v-btn
-			icon
-			v-if="isMobile"
-			@click="sideMenuOpen = !sideMenuOpen"
-		>
+		<v-btn icon v-if="isMobile" @click="sideMenuOpen = !sideMenuOpen">
 			<v-icon>
 				{{ sideMenuOpen ? icons.mdiClose : icons.mdiMenu }}
 			</v-icon>
 		</v-btn>
 		<Teleport to="body">
-			<v-navigation-drawer
-				temporary
-				location="right"
-				v-model="sideMenuOpen"
-			>
+			<v-navigation-drawer temporary location="right" v-model="sideMenuOpen">
 				<v-list nav>
 					<v-list-item to="/"> Home </v-list-item>
-					<v-list-item v-if="loggedIn" to="/recipe/create"> Create recipe </v-list-item>
+					<v-list-item v-if="loggedIn" to="/recipe/create">
+						Create recipe
+					</v-list-item>
 					<v-list-item v-if="isAdmin" to="/admin"> Admin </v-list-item>
 				</v-list>
 
@@ -67,7 +58,9 @@ const icons = { mdiMenu, mdiClose };
 
 const profile = await useLocalUser();
 const loggedIn = computed(() => !!profile.data.value);
-const isAdmin = computed(() => profile.data.value && profile.data.value.isAdmin);
+const isAdmin = computed(
+	() => profile.data.value && profile.data.value.isAdmin,
+);
 const isMobile = useDisplay().mobile;
 
 const sideMenuOpen = ref(false);

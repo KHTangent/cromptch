@@ -1,10 +1,6 @@
 <template>
 	<v-container>
-		<v-form
-			ref="recipeEditor"
-			validate-on="submit"
-			@submit.prevent="submit"
-		>
+		<v-form ref="recipeEditor" validate-on="submit" @submit.prevent="submit">
 			<h2 class="text-h2">Metadata</h2>
 			<v-text-field
 				v-model="recipe.name"
@@ -20,12 +16,7 @@
 			></v-textarea>
 			<v-divider class="my-2"></v-divider>
 			<h2 class="text-h2 my-4">Optional info</h2>
-			<v-btn
-				block
-				@click="mainImageDialogOpen = true"
-			>
-				Add image
-			</v-btn>
+			<v-btn block @click="mainImageDialogOpen = true"> Add image </v-btn>
 			<ImageUploadDialog
 				title="Main image"
 				v-model:open="mainImageDialogOpen"
@@ -39,7 +30,11 @@
 						label="Estimated time spent preparing (hours)"
 						required
 						:rules="[
-							(v) => (!v || v.length == 0 || v > 0) || 'Amount must be empty or greater than 0',
+							(v) =>
+								!v ||
+								v.length == 0 ||
+								v > 0 ||
+								'Amount must be empty or greater than 0',
 						]"
 					></v-text-field>
 				</v-col>
@@ -50,7 +45,11 @@
 						label="Estimated time to done, including waiting (hours)"
 						required
 						:rules="[
-							(v) => (!v || v.length == 0 || v > 0) || 'Amount must be empty or greater than 0',
+							(v) =>
+								!v ||
+								v.length == 0 ||
+								v > 0 ||
+								'Amount must be empty or greater than 0',
 						]"
 					></v-text-field>
 				</v-col>
@@ -60,7 +59,12 @@
 						label="Recipe source URL"
 						required
 						:rules="[
-							(v) => (!v || v.length == 0 || v.startsWith('http://') || v.startsWith('https://')) || 'Must be empty or a valid URL',
+							(v) =>
+								!v ||
+								v.length == 0 ||
+								v.startsWith('http://') ||
+								v.startsWith('https://') ||
+								'Must be empty or a valid URL',
 						]"
 					></v-text-field>
 				</v-col>
@@ -154,13 +158,7 @@
 			</v-row>
 			<v-divider class="my-2"></v-divider>
 			<h2 class="text-h2 mt-8 mb-4">Publish</h2>
-			<v-btn
-				type="submit"
-				block
-				size="large"
-				color="success"
-				class="ma-3"
-			>
+			<v-btn type="submit" block size="large" color="success" class="ma-3">
 				Submit
 			</v-btn>
 		</v-form>
@@ -175,7 +173,9 @@ const emit = defineEmits(["submit"]);
 
 const recipeEditor = ref<any>(null);
 const mainImageDialogOpen = ref(false);
-const recipeDialogsOpen = ref<Array<boolean>>((new Array(recipe.value.steps.length).fill(false)));
+const recipeDialogsOpen = ref<Array<boolean>>(
+	new Array(recipe.value.steps.length).fill(false),
+);
 
 const icons = { mdiClose, mdiPlus, mdiCamera };
 const unitSuggestions = [

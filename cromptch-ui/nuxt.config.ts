@@ -1,4 +1,4 @@
-import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
 	devtools: { enabled: true },
@@ -7,7 +7,7 @@ export default defineNuxtConfig({
 		public: {
 			hcaptchaSiteKey: "",
 			apiUrl: "",
-		}
+		},
 	},
 	vuetify: {
 		vuetifyOptions: {
@@ -15,8 +15,8 @@ export default defineNuxtConfig({
 				defaultTheme: "dark",
 			},
 			icons: {
-				defaultSet: "mdi-svg"
+				defaultSet: "mdi-svg",
 			},
-		}
-	}
+		},
+	},
 });

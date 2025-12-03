@@ -8,34 +8,37 @@
 			A recipe must have at least one step and one ingredient.
 		</p>
 		<v-divider class="my-2"></v-divider>
-		<RecipeEditor
-			v-model="recipe"
-			@submit="submitAndRedirect"
-		></RecipeEditor>
+		<RecipeEditor v-model="recipe" @submit="submitAndRedirect"></RecipeEditor>
 	</v-container>
 </template>
 <script setup lang="ts">
-import { type CreateRecipeRequest, type CreateRecipeResponse } from "@/scripts/apiTypes";
+import {
+	type CreateRecipeRequest,
+	type CreateRecipeResponse,
+} from "@/scripts/apiTypes";
 import { FetchError } from "ofetch";
 
 const recipe = ref<CreateRecipeRequest>({
 	description: "",
 	name: "",
-	ingredients: [{
-		quantity: 0.0,
-		unit: "",
-		name: "",
-	}],
-	steps: [{
-		description: "",
-		imageId: "",
-	}],
+	ingredients: [
+		{
+			quantity: 0.0,
+			unit: "",
+			name: "",
+		},
+	],
+	steps: [
+		{
+			description: "",
+			imageId: "",
+		},
+	],
 });
 const error = ref("");
 
 const userToken = useToken();
 const isMobile = useDisplay().mobile;
-
 
 async function submitAndRedirect() {
 	if (recipe.value.imageId?.length == 0) {

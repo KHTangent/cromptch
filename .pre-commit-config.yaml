@@ -1,0 +1,9 @@
+repos:
+  - repo: builtin
+    hooks:
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+        exclude: migrations/
+      - id: trailing-whitespace
+        exclude: migrations/

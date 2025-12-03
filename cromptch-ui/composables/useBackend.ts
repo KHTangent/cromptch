@@ -8,4 +8,4 @@ export const useBackend = () => {
 		apiInstance = new Api(config.public.apiUrl);
 	}
 	return apiInstance;
-}
+};

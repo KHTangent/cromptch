@@ -1,24 +1,33 @@
 <template>
 	<v-container>
 		<v-container v-if="getHeaderImageUrl().length > 0">
-			<v-img
-				cover
-				max-height="500"
-				:src="getHeaderImageUrl()"
-			></v-img>
+			<v-img cover max-height="500" :src="getHeaderImageUrl()"></v-img>
 		</v-container>
-		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">{{ recipe.metadata.title }}</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">
+			{{ recipe.metadata.title }}
+		</h1>
 		<p class="text-body-1">{{ recipe.metadata.description }}</p>
 		<p class="text-body-1">
 			Uploaded by <strong>{{ author }}</strong>
 		</p>
-		<p class="text-body-1" v-if="recipe.metadata.timeEstimateActive || recipe.metadata.timeEstimateTotal">
-			<span v-if="recipe.metadata.timeEstimateActive">Estimated work time: {{ recipe.metadata.timeEstimateActive }}</span>
-			<br>
-			<span v-if="recipe.metadata.timeEstimateTotal">Estimated total time including waits: {{ recipe.metadata.timeEstimateTotal }}</span>
+		<p
+			class="text-body-1"
+			v-if="
+				recipe.metadata.timeEstimateActive || recipe.metadata.timeEstimateTotal
+			"
+		>
+			<span v-if="recipe.metadata.timeEstimateActive"
+				>Estimated work time: {{ recipe.metadata.timeEstimateActive }}</span
+			>
+			<br />
+			<span v-if="recipe.metadata.timeEstimateTotal"
+				>Estimated total time including waits:
+				{{ recipe.metadata.timeEstimateTotal }}</span
+			>
 		</p>
 		<p class="text-body-1">
-			Upload date: {{ (new Date(recipe.metadata.createdAt * 1000)).toDateString() }}
+			Upload date:
+			{{ new Date(recipe.metadata.createdAt * 1000).toDateString() }}
 		</p>
 		<v-divider class="my-2"></v-divider>
 		<v-row>
@@ -90,7 +99,10 @@
 					</v-list-item>
 				</v-list>
 				<p class="text-body-1" v-if="recipe.metadata.sourceUrl">
-					Source: <a target="_blank" :href="recipe.metadata.sourceUrl">{{ recipe.metadata.sourceUrl }}</a>
+					Source:
+					<a target="_blank" :href="recipe.metadata.sourceUrl">{{
+						recipe.metadata.sourceUrl
+					}}</a>
 				</p>
 			</v-col>
 		</v-row>
@@ -106,7 +118,9 @@ const icons = {
 
 const route = useRoute();
 const isMobile = useDisplay().mobile;
-const { recipe, author } = await useBackend().getRecipe(route.params.id as string);
+const { recipe, author } = await useBackend().getRecipe(
+	route.params.id as string,
+);
 const ingredientScaleFactor = ref(1);
 
 function increaseScale() {

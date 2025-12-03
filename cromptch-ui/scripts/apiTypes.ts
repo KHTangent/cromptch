@@ -27,13 +27,13 @@ export interface RecipeMetadata {
 }
 
 export interface RecipeIngredient {
-	quantity: number,
-	unit: string,
-	name: string,
+	quantity: number;
+	unit: string;
+	name: string;
 }
 
 export interface RecipeStep {
-	description: string,
+	description: string;
 	imageId?: string;
 }
 

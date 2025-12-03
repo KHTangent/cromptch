@@ -20,4 +20,3 @@ reqwest = { version = "0.11", features = ["json", "rustls-tls", "multipart"], de
 env_logger = "0.10"
 bytes = "1.5"
 chrono = { version = "0.4", features = ["serde"] }
-

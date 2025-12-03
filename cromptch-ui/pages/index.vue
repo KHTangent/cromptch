@@ -1,6 +1,8 @@
 <template>
 	<v-container>
-		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">Cromptch: Share recipes</h1>
+		<h1 :class="`text-h${isMobile ? '2' : '1'} mb-4`">
+			Cromptch: Share recipes
+		</h1>
 		<v-container class="d-flex flex-direction-row justify-end">
 			<v-btn-toggle v-model="selectedSortMode">
 				<v-btn icon>
@@ -26,7 +28,12 @@
 </template>
 <script setup lang="ts">
 import * as APITypes from "@/scripts/apiTypes";
-import { mdiSortAlphabeticalAscending, mdiSortAlphabeticalDescending, mdiSortCalendarAscending, mdiSortCalendarDescending } from "@mdi/js";
+import {
+	mdiSortAlphabeticalAscending,
+	mdiSortAlphabeticalDescending,
+	mdiSortCalendarAscending,
+	mdiSortCalendarDescending,
+} from "@mdi/js";
 
 const icons = {
 	mdiSortAlphabeticalAscending,
@@ -56,6 +63,8 @@ watch(selectedSortMode, async (newValue, oldValue) => {
 });
 
 try {
-	recipes.value = await useBackend().getRecipeList(APITypes.RecipeListSortTypes.DateDescending);
+	recipes.value = await useBackend().getRecipeList(
+		APITypes.RecipeListSortTypes.DateDescending,
+	);
 } catch (e: any) {}
 </script>

@@ -40,15 +40,15 @@ const props = defineProps({
 	},
 	maxSize: {
 		type: Number,
-		default: 10000000
+		default: 10000000,
 	},
 	fileInputLabel: {
 		type: String,
-		default: "Select file"
+		default: "Select file",
 	},
 	acceptTypes: {
 		type: String,
-		default: "image/png, image/jpeg, image/bmp, image/webp"
+		default: "image/png, image/jpeg, image/bmp, image/webp",
 	},
 });
 
@@ -68,10 +68,13 @@ async function upload() {
 	}
 	const file = selectedFile.value[0];
 	if (file.size >= props.maxSize) {
-		selectionError.value = `File is too large, must be max ${(props.maxSize/1000000).toFixed(1)} MB`;
+		selectionError.value = `File is too large, must be max ${(props.maxSize / 1000000).toFixed(1)} MB`;
 		return;
 	}
-	if (props.acceptTypes.length > 0 && props.acceptTypes.search(file.type) == -1) {
+	if (
+		props.acceptTypes.length > 0 &&
+		props.acceptTypes.search(file.type) == -1
+	) {
 		selectionError.value = "Invalid file type selected";
 		return;
 	}

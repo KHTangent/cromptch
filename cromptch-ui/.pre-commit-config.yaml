@@ -1,0 +1,5 @@
+repos:
+  - repo: https://github.com/JoC0de/pre-commit-prettier
+    rev: v3.7.4
+    hooks:
+      - id: prettier

@@ -9,17 +9,25 @@
 
 		<h2 class="text-h2 my-4">Recipes</h2>
 		<ConfirmationDialog
-			:title="!deleteRecipeConfirmationOpen ? '' : `Delete recipe ${recipeList[selectedRecipe].id}?`"
+			:title="
+				!deleteRecipeConfirmationOpen
+					? ''
+					: `Delete recipe ${recipeList[selectedRecipe].id}?`
+			"
 			v-model="deleteRecipeConfirmationOpen"
 			@confirm="deleteRecipe(recipeList[selectedRecipe].id)"
 		>
-			<p class="text-body-1">
-				This action can not be undone.
-			</p>
+			<p class="text-body-1">This action can not be undone.</p>
 		</ConfirmationDialog>
 		<v-data-table :items="recipeList">
 			<template v-slot:item.actions="{ index }">
-				<v-btn icon @click="selectedRecipe = index; deleteRecipeConfirmationOpen = true">
+				<v-btn
+					icon
+					@click="
+						selectedRecipe = index;
+						deleteRecipeConfirmationOpen = true;
+					"
+				>
 					<v-icon>
 						{{ icons.mdiTrashCan }}
 					</v-icon>
@@ -48,13 +56,25 @@ function extendRecipe(recipe: ApiTypes.RecipeMetadata) {
 	r.actions = "";
 	return r;
 }
-const recipeList = ref((await useBackend().getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe));
+const recipeList = ref(
+	(
+		await useBackend().getRecipeList(
+			ApiTypes.RecipeListSortTypes.NameAscending,
+			99999,
+		)
+	).map(extendRecipe),
+);
 const selectedRecipe = ref(-1);
 const deleteRecipeConfirmationOpen = ref(false);
 
 async function deleteRecipe(id: string) {
 	await useBackend().admin.deleteRecipe(token.value, id);
-	recipeList.value = (await useBackend().getRecipeList(ApiTypes.RecipeListSortTypes.NameAscending, 99999)).map(extendRecipe);
+	recipeList.value = (
+		await useBackend().getRecipeList(
+			ApiTypes.RecipeListSortTypes.NameAscending,
+			99999,
+		)
+	).map(extendRecipe);
 	deleteRecipeConfirmationOpen.value = false;
 }
 </script>

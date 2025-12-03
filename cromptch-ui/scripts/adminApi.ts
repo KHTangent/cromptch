@@ -6,9 +6,7 @@ export class AdminApi {
 		this.apiUrl = apiUrl;
 	}
 
-	async getAllUsers(
-		token: string,
-	): Promise<ApiTypes.UserView[]> {
+	async getAllUsers(token: string): Promise<ApiTypes.UserView[]> {
 		let r = await $fetch<ApiTypes.UserView[]>(this.apiUrl + "/admin/users", {
 			method: "GET",
 			headers: {
@@ -19,10 +17,7 @@ export class AdminApi {
 		return r;
 	}
 
-	async deleteRecipe(
-		token: string,
-		id: string,
-	): Promise<void> {
+	async deleteRecipe(token: string, id: string): Promise<void> {
 		await $fetch(this.apiUrl + `/admin/recipe/${id}`, {
 			method: "DELETE",
 			headers: {

@@ -53,9 +53,7 @@ export class Api {
 		return r;
 	}
 
-	async getSelfUser(
-		token: string,
-	): Promise<ApiTypes.UserView> {
+	async getSelfUser(token: string): Promise<ApiTypes.UserView> {
 		let r = await $fetch<ApiTypes.UserView>(this.apiUrl + "/user/self", {
 			method: "GET",
 			headers: {
@@ -83,12 +81,15 @@ export class Api {
 	}
 
 	async getRecipe(id: string): Promise<ApiTypes.GetRecipeResponse> {
-		let r = await $fetch<ApiTypes.GetRecipeResponse>(`${this.apiUrl}/recipe/${id}`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
+		let r = await $fetch<ApiTypes.GetRecipeResponse>(
+			`${this.apiUrl}/recipe/${id}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
 			},
-		});
+		);
 		return r;
 	}
 
@@ -116,16 +117,13 @@ export class Api {
 	): Promise<ApiTypes.ImageUploadResponse> {
 		let body = new FormData();
 		body.set("file", imageFile);
-		let r = await $fetch<ApiTypes.ImageUploadResponse>(
-			`${this.apiUrl}/image`,
-			{
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-				body,
+		let r = await $fetch<ApiTypes.ImageUploadResponse>(`${this.apiUrl}/image`, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`,
 			},
-		);
+			body,
+		});
 		return r;
 	}
 }
